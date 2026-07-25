@@ -380,6 +380,11 @@
       <a href="#section-carelist">케어리스트</a>
     </nav>
     <div class="header-actions">
+      <div class="vc-lang" role="group" aria-label="Language / 언어">
+        <button type="button" data-lang="ko" onclick="vcSetLang('ko')">KO</button>
+        <button type="button" data-lang="en" onclick="vcSetLang('en')">EN</button>
+        <button type="button" data-lang="ja" onclick="vcSetLang('ja')">日本語</button>
+      </div>
       <a class="btn header-cta" href="#section-diagnosis">3분 진단 시작</a>
     </div>
   </div>
@@ -929,6 +934,423 @@
       $('nl-done').style.display = 'block';
     });
   };
+})();
+</script>
+<!-- ==========================================================
+  [i18n] 다국어(KO/EN/JA) — 브라우저 언어 자동감지 + 수동 스위처 + 선택 기억
+  · 한국어 원문을 키로 하는 번역 사전(DICT)을 런타임에 텍스트/속성에 적용
+  · 동적 퀴즈 콘텐츠는 MutationObserver로 자동 번역
+  · 번역 문구는 AI 초안 — 검토/수정 시 아래 DICT 값만 고치면 됩니다
+=========================================================== -->
+<style id="vc-i18n-style">
+  .vc-lang{display:inline-flex;border:1px solid var(--vc-line);border-radius:100px;overflow:hidden;background:#fff;flex-shrink:0}
+  .vc-lang button{appearance:none;-webkit-appearance:none;border:none;background:transparent;cursor:pointer;
+    font-family:var(--font-body);font-size:12px;font-weight:600;color:var(--vc-taupe);
+    padding:6px 10px;line-height:1;white-space:nowrap;transition:background .2s,color .2s}
+  .vc-lang button + button{border-left:1px solid var(--vc-line)}
+  .vc-lang button:hover{color:var(--vc-rosewood)}
+  .vc-lang button.active{background:var(--vc-rosewood);color:#fff}
+  @media (max-width:860px){ .vc-lang button{padding:6px 8px;font-size:11px} }
+</style>
+<script id="vc-i18n-script">
+(function(){
+  var DICT = {
+    en: {
+      "팔자주름 셀프케어 · 3분 자가 진단 | 비주얼 클리닉":"Nasolabial Fold Self-Care · 3-Minute Self Check | Visual Clinic",
+      "팔자주름, 나이 탓이 아닙니다. 19년차 물리치료사의 3분 자가 진단으로 진짜 원인을 확인하고 내 단계에 맞는 셀프케어 루틴을 시작하세요.":"Nasolabial folds aren't just about age. Take a 19-year physical therapist's 3-minute self check to find the real cause and start a self-care routine matched to your stage.",
+      "팔자주름, 나이 탓이 아닙니다 — 3분 자가 진단":"Nasolabial folds aren't just about age — a 3-minute self check",
+      "매일의 습관과 자세가 만든 그 라인. 19년차 물리치료사의 진단으로 진짜 원인을 확인하세요.":"The line shaped by your daily habits and posture. Find the real cause with a 19-year physical therapist's self check.",
+      "본문(자가 진단)으로 바로가기":"Skip to main content (self check)",
+      "이 페이지의 자가 진단과 신청 폼은 자바스크립트가 켜져 있어야 동작합니다.":"The self check and sign-up forms on this page require JavaScript to be enabled.",
+      "비주얼 클리닉 홈":"Visual Clinic home",
+      "주요 메뉴":"Main menu",
+      "전문가 소개":"About the Expert",
+      "자가 진단":"Self Check",
+      "강좌":"Courses",
+      "케어리스트":"Care-list",
+      "3분 진단 시작":"Start 3-min Check",
+      "19년차 물리치료사가 만든 페이셜 셀프케어 시스템":"A facial self-care system built by a physical therapist with 19 years of experience",
+      "팔자주름의 진짜 원인을 3분 만에 확인하고":"Find the real cause of your nasolabial folds in 3 minutes,",
+      "내 유형에 맞는 셀프 케어 루틴을 시작하세요.":"and start a self-care routine made for your type.",
+      "팔자주름, 나이 탓이 아닙니다.":"Nasolabial folds aren't just about age.",
+      "매일의 습관과 자세가 만든 그 라인, 함께 바꿔갈게요.":"That line was shaped by daily habits and posture — let's change it together.",
+      "내 팔자주름 원인 진단하기":"Check my nasolabial fold cause",
+      "셀프 케어 영상 보기":"Watch self-care videos",
+      "김선미 — 얼굴 교정 전문가, 19년차 물리치료사":"Kim Seon-mi — Facial Correction Specialist, Physical Therapist (19 yrs)",
+      "필라테스 센터 '리얼라인' 대표. 비주얼 클리닉 시스템을 만들고, '비주얼 케어리스트'라는 새로운 직업을 제안했습니다. 수술 없이도 얼굴이 달라질 수 있다는 믿음으로, 임상에서 검증한 방법만을 나눕니다.":"Founder of the Pilates studio 'Realign.' She created the Visual Clinic system and proposed a new profession, the 'Visual Care-list.' Believing the face can change without surgery, she shares only clinically proven methods.",
+      "Instagram에서 케어 스토리 보기":"See care stories on Instagram",
+      "나의 고민, 원인부터 정확히":"Your concern — starting from the real cause",
+      "가장 깊은 고민, 팔자주름 하나에 집중합니다. 3분이면 내 유형을 확인할 수 있어요.":"We focus on one deep concern: nasolabial folds. In just 3 minutes, discover your type.",
+      "거울처럼 관찰해 보세요. 무표정 ↔ 미소를 반복하며 팔자 라인의 깊이를 확인!":"Observe yourself like a mirror. Alternate between a neutral face and a smile to check the depth of your folds!",
+      "카메라 닫기":"Close camera",
+      "팔자주름 자가 진단 테스트":"Nasolabial Fold Self-Check Test",
+      "카메라로 내 팔자 라인 보기":"View my fold line with the camera",
+      "테스트 시작하기 · 9문항":"Start the test · 9 questions",
+      "본 테스트는 자가 점검용 콘텐츠로, 의학적 진단을 대신하지 않습니다.":"This test is self-check content and does not replace a medical diagnosis.",
+      "눈에 보이는 신호":"Visible signs",
+      "생활 습관":"Lifestyle habits",
+      "자세와 근육":"Posture & muscles",
+      "← 이전 문항으로":"← Previous question",
+      "/ 27점":"/ 27 pts",
+      "축별 점검 결과":"Results by axis",
+      "이 결과, 이메일로 받아보기":"Get this result by email",
+      "상세 리포트와 내 단계에 맞는 7일 셀프케어 루틴을 함께 보내드려요.":"We'll send a detailed report plus a 7-day self-care routine matched to your stage.",
+      "이메일 주소":"Email address",
+      "받아보기":"Get it",
+      "신청 시 리포트 발송을 위한 이메일 수집·이용에 동의하게 됩니다.":"By signing up, you agree to the collection and use of your email to send the report.",
+      "신청 완료! 💌":"You're all set! 💌",
+      "리포트가 곧 이메일로 도착합니다. 스팸함도 한 번 확인해 주세요.":"Your report will arrive by email shortly. Please check your spam folder too.",
+      "지금 바로 해결하기":"Solve it now",
+      "19년차 물리치료사 · 얼굴 교정 전문가 김선미":"Kim Seon-mi · Facial Correction Specialist, Physical Therapist (19 yrs)",
+      "본 테스트는 자가 점검용이며 의학적 진단을 대신하지 않습니다.":"This test is for self-check and does not replace a medical diagnosis.",
+      "비주얼 클리닉이 함께하는 방법":"How Visual Clinic works with you",
+      "3분 자가 진단":"3-minute self check",
+      "9개 문항으로 내 팔자주름의 단계와 원인 축(신호·습관·자세)을 확인해요.":"Nine questions reveal your nasolabial fold stage and its cause axes (signs · habits · posture).",
+      "상세 리포트 + 7일 루틴":"Detailed report + 7-day routine",
+      "이메일로 내 유형의 원인 분석과 일주일 셀프케어 루틴을 받아보세요.":"Receive a cause analysis for your type and a one-week self-care routine by email.",
+      "맞춤 강좌로 홈케어 시작":"Start home care with a tailored course",
+      "내 단계에 맞는 동영상 강좌로 거울 앞 습관을 바꿔갑니다.":"Change your habits in front of the mirror with a video course matched to your stage.",
+      "전문가의 손길을 우리 집 거울 앞으로":"Bring an expert's touch to your own mirror",
+      "한국어·영어 자막을 제공하는 홈케어 강좌. 미리보기 챕터는 무료로 열어둡니다.":"Home-care courses with Korean and English subtitles. Preview chapters are free.",
+      "팔자주름 14일 홈케어":"14-Day Nasolabial Home Care",
+      "하루 10분, 근막과 습관을 함께 바꾸는 기본 루틴 · KRW/USD · 미리보기 2강 무료":"10 minutes a day — a basic routine that changes fascia and habits together · KRW/USD · 2 preview lessons free",
+      "거북목·자세 교정 루틴":"Forward-Neck & Posture Correction Routine",
+      "팔자주름의 뿌리인 목과 자세를 바로잡는 심화 과정 · 팔자주름 14일 과정과 연계":"An advanced program that corrects the neck and posture — the root of nasolabial folds · pairs with the 14-Day course",
+      "좌우 비대칭 집중 루틴":"Left-Right Asymmetry Focus Routine",
+      "한쪽만 깊은 팔자주름을 위한 심화 과정 · 14일 과정과 연계":"An advanced program for folds that are deeper on one side · pairs with the 14-Day course",
+      "먼저 시작한 분들의 이야기":"Stories from those who started first",
+      "\"거울 볼 때마다 한숨이었는데, 2주 차부터 오후의 처짐이 달라지는 게 느껴졌어요. 무엇보다 내 주름이 왜 생겼는지 알게 된 게 가장 커요.\"":"\"I used to sigh every time I looked in the mirror, but from week two I could feel the afternoon sagging change. Most of all, finally understanding why my folds formed meant the most.\"",
+      "14일 홈케어 수강생 J님":"J, 14-Day Home Care student",
+      "\"필러 상담까지 받았다가 마지막이라는 마음으로 시작했어요. 매일 10분 습관이 이렇게 차이를 만드는 줄 몰랐네요.\"":"\"I'd even had a filler consultation, then started this as a last resort. I never knew a 10-minute daily habit could make such a difference.\"",
+      "30대 수강생 M님":"M, student in her 30s",
+      "\"자세 교정 루틴을 병행하니 목이 편해지면서 얼굴 라인도 정돈되는 느낌이에요. 물리치료사 선생님 설명이라 믿음이 갑니다.\"":"\"Adding the posture-correction routine eased my neck, and my facial line feels more defined too. Coming from a physical therapist, I really trust it.\"",
+      "거북목·자세 루틴 수강생 H님":"H, Neck & Posture routine student",
+      "※ 셀프케어 결과는 개인의 생활 습관과 상태에 따라 차이가 있을 수 있습니다. 본 서비스는 의료 행위를 대체하지 않습니다.":"※ Self-care results may vary depending on individual habits and condition. This service does not replace medical treatment.",
+      "비주얼 케어리스트가 되는 길":"The path to becoming a Visual Care-list",
+      "에스테티션, 필라테스 강사, 물리치료사를 위한 전문가 과정과 라이센스 프로그램. 새로운 커리어의 문을 열어드립니다. (Phase 3 오픈 예정)":"A professional course and license program for estheticians, Pilates instructors, and physical therapists. We'll open the door to a new career. (Phase 3 coming soon)",
+      "사전 알림 신청":"Get notified early",
+      "일주일에 한 번, 얼굴이 좋아지는 습관":"Once a week, a habit for a better face",
+      "셀프케어 팁과 새 강좌 소식을 이메일로 보내드려요.":"We'll email you self-care tips and news about new courses.",
+      "구독하기":"Subscribe",
+      "구독 신청 완료! 다음 레터에서 만나요 💌":"You're subscribed! See you in the next letter 💌",
+      "주 1회, 언제든 구독 해지할 수 있어요.":"Once a week. Unsubscribe anytime.",
+      "문의 hello@your-domain.com":"Contact hello@your-domain.com",
+      "개인정보처리방침":"Privacy Policy",
+      "이용약관":"Terms of Service",
+      "환불 정책":"Refund Policy",
+      "이메일 주소를 다시 확인해 주세요.":"Please check your email address again.",
+      "이 브라우저에서는 카메라를 지원하지 않아요.":"This browser doesn't support the camera.",
+      "카메라를 열 수 없어요. 브라우저의 카메라 권한을 허용해 주세요. (https로 배포된 주소에서 정상 동작합니다)":"Couldn't open the camera. Please allow camera permission in your browser. (Works on an https address.)",
+      "STAGE 1 · 0~6점":"STAGE 1 · 0–6 pts",
+      "STAGE 2 · 7~13점":"STAGE 2 · 7–13 pts",
+      "STAGE 3 · 14~20점":"STAGE 3 · 14–20 pts",
+      "STAGE 4 · 21~27점":"STAGE 4 · 21–27 pts",
+      "아직은 안심 단계예요":"Still in the safe zone",
+      "몸이 보내는 초기 신호 단계예요":"Early signals from your body",
+      "관리가 필요한 단계예요":"Time to start managing it",
+      "집중 케어가 필요한 단계예요":"Focused care is needed",
+      "지금의 좋은 습관이 미래의 얼굴을 지켜주고 있어요. 다만 팔자주름은 어느 날 갑자기가 아니라, 매일 조금씩 만들어진답니다. 지금처럼 바른 자세와 표정 습관을 유지해 주세요.":"Your good habits right now are protecting your future face. But nasolabial folds don't appear overnight — they're built up little by little, every day. Keep up your good posture and expression habits just as you are.",
+      "팔자주름은 피부 표면이 아니라, 볼을 위로 끌어올리는 근육과 입 주변을 둥글게 감싸는 근육이 만나는 '경계선'에서 시작돼요. 이 근육들의 탄력이 유지되는 동안 주름은 만들어지지 않습니다. 하루 한 번, 혀끝으로 입안에서 팔자 라인을 아래에서 위로 부드럽게 밀어 올리는 '텅 리프팅'으로 근육에게 올바른 방향을 기억시켜 주세요. 예방은 언제나 가장 정확한 교정입니다.":"Nasolabial folds don't start at the skin's surface — they begin at the 'border line' where the muscle that lifts the cheek meets the muscle that circles the mouth. As long as these muscles keep their elasticity, folds don't form. Once a day, use your tongue tip to gently push the fold line upward from inside your mouth — a 'tongue lift' that teaches your muscles the right direction. Prevention is always the most precise correction.",
+      "주름 자체보다, 주름을 만드는 습관들이 먼저 자리 잡기 시작한 시기예요. 다행히 이 단계에서는 습관 교정만으로도 충분히 흐름을 되돌릴 수 있답니다. 나의 축별 점수 중 가장 높은 곳부터 살펴보세요.":"More than the folds themselves, the habits that create them have started to settle in. The good news: at this stage, correcting your habits alone is enough to reverse the trend. Start by looking at your highest score among the axes.",
+      "한쪽으로만 씹는 습관은 턱 근육의 좌우 힘 차이를 만들고, 이 불균형은 얼굴 전체를 감싸고 있는 얇은 막(근막)을 타고 전해져 팔자 라인의 비대칭으로 이어져요. 옆으로 자는 자세 역시 한쪽 볼을 매일 6~7시간씩 눌러 주름을 '접어두는' 것과 같습니다. 오늘부터 양쪽으로 번갈아 씹기, 천장을 보고 잠들기 — 이 두 가지 습관만 바꿔도 얼굴의 긴장 패턴은 2주 안에 달라지기 시작해요.":"Chewing on only one side creates a left-right imbalance in the jaw muscles, and that imbalance travels along the thin membrane (fascia) wrapping the whole face, leading to asymmetric folds. Sleeping on your side likewise presses one cheek for 6–7 hours a day — like 'folding in' a wrinkle. Starting today, chew on both sides alternately and fall asleep facing the ceiling — change just these two habits, and your face's tension pattern begins to shift within two weeks.",
+      "팔자주름이 이미 얼굴에 자리를 잡기 시작했고, 습관과 자세가 이를 매일 조금씩 깊게 만들고 있는 상태예요. 하지만 걱정하지 마세요. 얼굴은 근육과 근막으로 이루어져 있어서, 올바른 방향의 자극에는 반드시 반응한답니다.":"Nasolabial folds have already begun to settle into your face, and habits and posture are deepening them a little more each day. But don't worry — your face is made of muscle and fascia, and it always responds to stimulation in the right direction.",
+      "팔자주름의 뿌리는 얼굴이 아니라 목에 있는 경우가 많아요. 고개가 앞으로 나온 거북목 자세가 되면, 목 앞쪽을 넓게 덮고 있는 근육이 얼굴 아래쪽을 하루 종일 아래로 잡아당기게 됩니다. 그 힘이 쌓여 볼 처짐과 팔자주름의 깊이로 나타나는 거예요. 광대뼈 아래를 손가락으로 지그시 고정한 채 '아–에–이–오–우'를 천천히 발음하는 이완 운동과 함께, 목 앞과 옆을 늘려주는 스트레칭을 꼭 병행해 주세요. 얼굴과 목은 하나의 구조로 연결되어 움직입니다.":"The root of nasolabial folds is often in the neck, not the face. With a forward-head (tech-neck) posture, the broad muscle covering the front of the neck pulls the lower face downward all day long. That accumulated force shows up as cheek sagging and deeper folds. Gently anchor just below your cheekbones with your fingers and slowly pronounce 'ah–eh–ee–oh–oo' as a relaxation exercise, and be sure to pair it with stretches that lengthen the front and sides of your neck. The face and neck move as one connected structure.",
+      "주름, 습관, 자세 세 가지 축이 함께 얼굴의 균형을 무너뜨리고 있는 상태예요. 셀프케어만으로는 방향을 잡기 어려울 수 있어요. 이럴 때일수록 얼굴만 보는 것이 아니라, 자세와 근육의 연결까지 함께 보는 전문적인 접근이 필요하답니다.":"All three axes — folds, habits, and posture — are throwing your facial balance off together. Self-care alone may make it hard to find direction. Times like this call for a professional approach that looks not just at the face, but at how posture and muscles connect.",
+      "이 단계의 팔자주름은 피부가 아니라 '구조'의 문제예요. 볼의 지방층이 아래로 내려오고, 입 주변에서 턱, 목까지 이어지는 근육의 연결 고리가 함께 균형을 잃은 상태랍니다. 이럴 때 표면 마사지만 반복하면 이미 늘어난 조직에 자극만 더해질 수 있어요. 순서가 중요합니다. 씹는 근육과 목의 긴장을 먼저 풀고, 그다음 근육이 당기는 방향을 바로잡아야 얼굴의 균형이 돌아와요. 내 얼굴의 구조를 정확히 평가받는 것이 가장 빠르고 안전한 길입니다.":"At this stage, nasolabial folds are a matter of 'structure,' not skin. The cheek's fat layer has descended, and the chain of muscles running from around the mouth to the jaw and neck has lost its balance together. Repeating only surface massage here can just add stress to already-stretched tissue. Order matters: first release the tension in the chewing muscles and neck, then correct the direction the muscles pull — that's how facial balance returns. Getting your facial structure accurately assessed is the fastest and safest path.",
+      "거울 속 무표정한 내 얼굴, 팔자주름이 보이나요?":"In the mirror, with a neutral face, can you see your nasolabial folds?",
+      "전혀 보이지 않아요":"Not at all",
+      "웃을 때만 살짝 보여요":"Only slightly when I smile",
+      "무표정일 때도 옅게 보여요":"Faintly visible even at rest",
+      "무표정일 때도 뚜렷하게 패여 있어요":"Clearly etched even at rest",
+      "오후가 되면 팔자주름이 아침보다 깊어 보이나요?":"Do your folds look deeper in the afternoon than in the morning?",
+      "차이를 느끼지 못해요":"I notice no difference",
+      "가끔 피곤한 날에만 그래요":"Only on tired days sometimes",
+      "오후엔 자주 깊어 보여요":"Often looks deeper in the afternoon",
+      "오후만 되면 얼굴 전체가 처져 보여요":"By afternoon my whole face looks droopy",
+      "입꼬리 옆 볼살이 예전보다 처지거나 두툼해 보이나요?":"Does the cheek beside your mouth corner look saggier or fuller than before?",
+      "변화가 없어요":"No change",
+      "아주 미세하게 느껴져요":"A very slight change",
+      "사진을 보면 확실히 달라졌어요":"In photos it's clearly changed",
+      "볼살이 팔자주름 위로 접혀 보여요":"The cheek looks folded over the crease",
+      "턱을 괴거나, 한쪽으로만 음식을 씹는 습관이 있나요?":"Do you rest your chin on your hand or chew on only one side?",
+      "둘 다 해당 없어요":"Neither applies",
+      "가끔 나도 모르게 해요":"Sometimes without noticing",
+      "하루에도 여러 번 해요":"Several times a day",
+      "항상 같은 쪽으로 씹고 자주 턱을 괴어요":"Always chew the same side and often rest my chin",
+      "잠은 주로 어떤 자세로 주무시나요?":"What position do you usually sleep in?",
+      "똑바로 누워서 자요":"On my back",
+      "가끔 옆으로 자요":"Sometimes on my side",
+      "거의 매일 같은 방향으로 옆으로 자요":"On the same side almost every night",
+      "엎드리거나 얼굴을 베개에 묻고 자요":"On my stomach or with my face in the pillow",
+      "나도 모르게 입이 벌어져 있거나, 입으로 숨 쉴 때가 있나요?":"Do you find your mouth hanging open or breathe through your mouth without realizing?",
+      "전혀 없어요":"Never",
+      "집중할 때 가끔 그래요":"Sometimes when concentrating",
+      "자주 그런 편이에요":"Fairly often",
+      "자고 일어나면 입이 말라 있을 정도예요":"My mouth is dry when I wake up",
+      "스마트폰이나 모니터를 볼 때, 고개가 앞으로 빠져 있다는 말을 듣나요?":"When looking at your phone or monitor, are you told your head juts forward?",
+      "자세가 바르다는 말을 들어요":"I'm told my posture is good",
+      "가끔 고개를 숙이고 있어요":"I sometimes hunch forward",
+      "거북목이라는 말을 들은 적 있어요":"I've been told I have tech-neck",
+      "목과 어깨 통증까지 함께 있어요":"I also have neck and shoulder pain",
+      "하루 중 표정 없이 보내는 시간이 얼마나 되나요?":"How much of your day do you spend with a blank expression?",
+      "대화와 표정이 많은 편이에요":"Lots of talking and expressions",
+      "업무 중엔 무표정이지만 자주 웃어요":"Blank at work but I smile often",
+      "하루 대부분 무표정으로 보내요":"Blank most of the day",
+      "얼굴 근육을 거의 쓰지 않는 것 같아요":"I barely use my facial muscles",
+      "좌우 팔자주름의 깊이가 다르거나, 얼굴이 비대칭이라고 느끼나요?":"Do your left and right folds differ in depth, or does your face feel asymmetric?",
+      "대칭에 가까워요":"Close to symmetric",
+      "자세히 보면 미세하게 달라요":"Slightly different on close look",
+      "한쪽이 눈에 띄게 더 깊어요":"One side is noticeably deeper",
+      "비대칭이 심해서 사진 각도를 신경 써요":"So asymmetric I mind my photo angles"
+    },
+    ja: {
+      "팔자주름 셀프케어 · 3분 자가 진단 | 비주얼 클리닉":"ほうれい線セルフケア・3分セルフ診断 | ビジュアルクリニック",
+      "팔자주름, 나이 탓이 아닙니다. 19년차 물리치료사의 3분 자가 진단으로 진짜 원인을 확인하고 내 단계에 맞는 셀프케어 루틴을 시작하세요.":"ほうれい線は、年齢のせいだけではありません。経験19年の理学療法士による3分間のセルフ診断で本当の原因を見つけ、あなたの段階に合ったセルフケアを始めましょう。",
+      "팔자주름, 나이 탓이 아닙니다 — 3분 자가 진단":"ほうれい線は年齢のせいだけじゃない — 3分セルフ診断",
+      "매일의 습관과 자세가 만든 그 라인. 19년차 물리치료사의 진단으로 진짜 원인을 확인하세요.":"毎日の習慣と姿勢がつくったそのライン。経験19年の理学療法士の診断で本当の原因を確かめて。",
+      "본문(자가 진단)으로 바로가기":"本文（セルフ診断）へスキップ",
+      "이 페이지의 자가 진단과 신청 폼은 자바스크립트가 켜져 있어야 동작합니다.":"このページのセルフ診断と申込フォームはJavaScriptを有効にする必要があります。",
+      "비주얼 클리닉 홈":"ビジュアルクリニック ホーム",
+      "주요 메뉴":"メインメニュー",
+      "전문가 소개":"専門家紹介",
+      "자가 진단":"セルフ診断",
+      "강좌":"講座",
+      "케어리스트":"ケアリスト",
+      "3분 진단 시작":"3分診断を始める",
+      "19년차 물리치료사가 만든 페이셜 셀프케어 시스템":"経験19年の理学療法士がつくったフェイシャル・セルフケア・システム",
+      "팔자주름의 진짜 원인을 3분 만에 확인하고":"ほうれい線の本当の原因を3分で見つけ、",
+      "내 유형에 맞는 셀프 케어 루틴을 시작하세요.":"あなたのタイプに合ったセルフケアを始めましょう。",
+      "팔자주름, 나이 탓이 아닙니다.":"ほうれい線は、年齢のせいだけではありません。",
+      "매일의 습관과 자세가 만든 그 라인, 함께 바꿔갈게요.":"毎日の習慣と姿勢がつくったそのライン、一緒に変えていきましょう。",
+      "내 팔자주름 원인 진단하기":"ほうれい線の原因を診断する",
+      "셀프 케어 영상 보기":"セルフケア動画を見る",
+      "김선미 — 얼굴 교정 전문가, 19년차 물리치료사":"キム・ソンミ — 顔矯正スペシャリスト、経験19年の理学療法士",
+      "필라테스 센터 '리얼라인' 대표. 비주얼 클리닉 시스템을 만들고, '비주얼 케어리스트'라는 새로운 직업을 제안했습니다. 수술 없이도 얼굴이 달라질 수 있다는 믿음으로, 임상에서 검증한 방법만을 나눕니다.":"ピラティススタジオ「リアライン」代表。ビジュアルクリニック・システムを開発し、「ビジュアルケアリスト」という新しい職業を提案しました。手術をしなくても顔は変えられるという信念のもと、臨床で検証された方法だけをお伝えします。",
+      "Instagram에서 케어 스토리 보기":"Instagramでケアストーリーを見る",
+      "나의 고민, 원인부터 정확히":"あなたの悩みを、原因から正確に",
+      "가장 깊은 고민, 팔자주름 하나에 집중합니다. 3분이면 내 유형을 확인할 수 있어요.":"いちばんの悩み、ほうれい線ひとつに集中します。3分であなたのタイプがわかります。",
+      "거울처럼 관찰해 보세요. 무표정 ↔ 미소를 반복하며 팔자 라인의 깊이를 확인!":"鏡のように観察してみましょう。無表情↔笑顔を繰り返して、ほうれい線の深さをチェック！",
+      "카메라 닫기":"カメラを閉じる",
+      "팔자주름 자가 진단 테스트":"ほうれい線セルフ診断テスト",
+      "카메라로 내 팔자 라인 보기":"カメラでほうれい線を見る",
+      "테스트 시작하기 · 9문항":"テストを始める・9問",
+      "본 테스트는 자가 점검용 콘텐츠로, 의학적 진단을 대신하지 않습니다.":"本テストはセルフチェック用のコンテンツであり、医学的診断に代わるものではありません。",
+      "눈에 보이는 신호":"見える兆候",
+      "생활 습관":"生活習慣",
+      "자세와 근육":"姿勢と筋肉",
+      "← 이전 문항으로":"← 前の質問へ",
+      "/ 27점":"/ 27点",
+      "축별 점검 결과":"軸別の診断結果",
+      "이 결과, 이메일로 받아보기":"この結果をメールで受け取る",
+      "상세 리포트와 내 단계에 맞는 7일 셀프케어 루틴을 함께 보내드려요.":"詳細レポートと、あなたの段階に合った7日間のセルフケアを一緒にお送りします。",
+      "이메일 주소":"メールアドレス",
+      "받아보기":"受け取る",
+      "신청 시 리포트 발송을 위한 이메일 수집·이용에 동의하게 됩니다.":"お申し込みにより、レポート送付のためのメールアドレスの収集・利用に同意したものとみなされます。",
+      "신청 완료! 💌":"お申し込み完了！💌",
+      "리포트가 곧 이메일로 도착합니다. 스팸함도 한 번 확인해 주세요.":"レポートは間もなくメールで届きます。迷惑メールフォルダもご確認ください。",
+      "지금 바로 해결하기":"今すぐ解決する",
+      "19년차 물리치료사 · 얼굴 교정 전문가 김선미":"経験19年の理学療法士・顔矯正スペシャリスト キム・ソンミ",
+      "본 테스트는 자가 점검용이며 의학적 진단을 대신하지 않습니다.":"本テストはセルフチェック用であり、医学的診断に代わるものではありません。",
+      "비주얼 클리닉이 함께하는 방법":"ビジュアルクリニックのご利用の流れ",
+      "3분 자가 진단":"3分セルフ診断",
+      "9개 문항으로 내 팔자주름의 단계와 원인 축(신호·습관·자세)을 확인해요.":"9つの質問で、ほうれい線の段階と原因の軸（兆候・習慣・姿勢）を確認します。",
+      "상세 리포트 + 7일 루틴":"詳細レポート＋7日間ルーティン",
+      "이메일로 내 유형의 원인 분석과 일주일 셀프케어 루틴을 받아보세요.":"あなたのタイプの原因分析と1週間のセルフケアをメールで受け取れます。",
+      "맞춤 강좌로 홈케어 시작":"自分に合った講座でホームケア開始",
+      "내 단계에 맞는 동영상 강좌로 거울 앞 습관을 바꿔갑니다.":"あなたの段階に合った動画講座で、鏡の前の習慣を変えていきます。",
+      "전문가의 손길을 우리 집 거울 앞으로":"専門家の手わざを、自宅の鏡の前へ",
+      "한국어·영어 자막을 제공하는 홈케어 강좌. 미리보기 챕터는 무료로 열어둡니다.":"韓国語・英語字幕付きのホームケア講座。プレビュー章は無料で公開しています。",
+      "팔자주름 14일 홈케어":"ほうれい線14日ホームケア",
+      "하루 10분, 근막과 습관을 함께 바꾸는 기본 루틴 · KRW/USD · 미리보기 2강 무료":"1日10分、筋膜と習慣を一緒に変える基本ルーティン・KRW/USD・プレビュー2レッスン無料",
+      "거북목·자세 교정 루틴":"ストレートネック・姿勢矯正ルーティン",
+      "팔자주름의 뿌리인 목과 자세를 바로잡는 심화 과정 · 팔자주름 14일 과정과 연계":"ほうれい線の根本である首と姿勢を整える上級コース・ほうれい線14日コースと連動",
+      "좌우 비대칭 집중 루틴":"左右非対称 集中ルーティン",
+      "한쪽만 깊은 팔자주름을 위한 심화 과정 · 14일 과정과 연계":"片側だけ深いほうれい線のための上級コース・14日コースと連動",
+      "먼저 시작한 분들의 이야기":"ひと足先に始めた方の声",
+      "\"거울 볼 때마다 한숨이었는데, 2주 차부터 오후의 처짐이 달라지는 게 느껴졌어요. 무엇보다 내 주름이 왜 생겼는지 알게 된 게 가장 커요.\"":"「鏡を見るたびにため息でしたが、2週目から午後のたるみが変わるのを感じました。何より、自分のシワができた理由が分かったことが一番大きいです。」",
+      "14일 홈케어 수강생 J님":"14日ホームケア受講生 Jさん",
+      "\"필러 상담까지 받았다가 마지막이라는 마음으로 시작했어요. 매일 10분 습관이 이렇게 차이를 만드는 줄 몰랐네요.\"":"「フィラーの相談まで受けた後、これが最後という気持ちで始めました。毎日10分の習慣がこんなに差を生むとは思いませんでした。」",
+      "30대 수강생 M님":"30代受講生 Mさん",
+      "\"자세 교정 루틴을 병행하니 목이 편해지면서 얼굴 라인도 정돈되는 느낌이에요. 물리치료사 선생님 설명이라 믿음이 갑니다.\"":"「姿勢矯正ルーティンを併用したら首が楽になり、フェイスラインも整う感じです。理学療法士の先生の説明なので信頼できます。」",
+      "거북목·자세 루틴 수강생 H님":"ストレートネック・姿勢ルーティン受講生 Hさん",
+      "※ 셀프케어 결과는 개인의 생활 습관과 상태에 따라 차이가 있을 수 있습니다. 본 서비스는 의료 행위를 대체하지 않습니다.":"※ セルフケアの結果は個人の生活習慣や状態により異なる場合があります。本サービスは医療行為に代わるものではありません。",
+      "비주얼 케어리스트가 되는 길":"ビジュアルケアリストになる道",
+      "에스테티션, 필라테스 강사, 물리치료사를 위한 전문가 과정과 라이센스 프로그램. 새로운 커리어의 문을 열어드립니다. (Phase 3 오픈 예정)":"エステティシャン、ピラティスインストラクター、理学療法士のための専門コースとライセンスプログラム。新しいキャリアの扉を開きます。（Phase 3 公開予定）",
+      "사전 알림 신청":"事前通知を申し込む",
+      "일주일에 한 번, 얼굴이 좋아지는 습관":"週に一度、顔が良くなる習慣",
+      "셀프케어 팁과 새 강좌 소식을 이메일로 보내드려요.":"セルフケアのヒントと新しい講座のお知らせをメールでお届けします。",
+      "구독하기":"購読する",
+      "구독 신청 완료! 다음 레터에서 만나요 💌":"購読登録が完了しました！次のレターでお会いしましょう💌",
+      "주 1회, 언제든 구독 해지할 수 있어요.":"週1回。いつでも配信停止できます。",
+      "문의 hello@your-domain.com":"お問い合わせ hello@your-domain.com",
+      "개인정보처리방침":"プライバシーポリシー",
+      "이용약관":"利用規約",
+      "환불 정책":"返金ポリシー",
+      "이메일 주소를 다시 확인해 주세요.":"メールアドレスをもう一度ご確認ください。",
+      "이 브라우저에서는 카메라를 지원하지 않아요.":"このブラウザはカメラに対応していません。",
+      "카메라를 열 수 없어요. 브라우저의 카메라 권한을 허용해 주세요. (https로 배포된 주소에서 정상 동작합니다)":"カメラを開けませんでした。ブラウザのカメラ権限を許可してください。（httpsアドレスで正常に動作します）",
+      "STAGE 1 · 0~6점":"STAGE 1・0〜6点",
+      "STAGE 2 · 7~13점":"STAGE 2・7〜13点",
+      "STAGE 3 · 14~20점":"STAGE 3・14〜20点",
+      "STAGE 4 · 21~27점":"STAGE 4・21〜27点",
+      "아직은 안심 단계예요":"まだ安心の段階です",
+      "몸이 보내는 초기 신호 단계예요":"体が送る初期サインの段階です",
+      "관리가 필요한 단계예요":"ケアが必要な段階です",
+      "집중 케어가 필요한 단계예요":"集中ケアが必要な段階です",
+      "지금의 좋은 습관이 미래의 얼굴을 지켜주고 있어요. 다만 팔자주름은 어느 날 갑자기가 아니라, 매일 조금씩 만들어진답니다. 지금처럼 바른 자세와 표정 습관을 유지해 주세요.":"今の良い習慣が、未来のあなたの顔を守っています。ただ、ほうれい線はある日突然ではなく、毎日少しずつつくられます。今のように正しい姿勢と表情の習慣を保ってください。",
+      "팔자주름은 피부 표면이 아니라, 볼을 위로 끌어올리는 근육과 입 주변을 둥글게 감싸는 근육이 만나는 '경계선'에서 시작돼요. 이 근육들의 탄력이 유지되는 동안 주름은 만들어지지 않습니다. 하루 한 번, 혀끝으로 입안에서 팔자 라인을 아래에서 위로 부드럽게 밀어 올리는 '텅 리프팅'으로 근육에게 올바른 방향을 기억시켜 주세요. 예방은 언제나 가장 정확한 교정입니다.":"ほうれい線は肌の表面ではなく、頬を上へ引き上げる筋肉と、口まわりを丸く囲む筋肉が出会う「境界線」から始まります。これらの筋肉の弾力が保たれている間は、シワはつくられません。1日1回、舌先で口の中からほうれい線を下から上へやさしく押し上げる「タングリフト」で、筋肉に正しい方向を覚えさせましょう。予防は、いつでも最も正確な矯正です。",
+      "주름 자체보다, 주름을 만드는 습관들이 먼저 자리 잡기 시작한 시기예요. 다행히 이 단계에서는 습관 교정만으로도 충분히 흐름을 되돌릴 수 있답니다. 나의 축별 점수 중 가장 높은 곳부터 살펴보세요.":"シワそのものよりも、シワをつくる習慣が先に定着し始めた時期です。幸い、この段階では習慣を正すだけでも十分に流れを戻せます。軸別スコアのうち、最も高いところから見直してみましょう。",
+      "한쪽으로만 씹는 습관은 턱 근육의 좌우 힘 차이를 만들고, 이 불균형은 얼굴 전체를 감싸고 있는 얇은 막(근막)을 타고 전해져 팔자 라인의 비대칭으로 이어져요. 옆으로 자는 자세 역시 한쪽 볼을 매일 6~7시간씩 눌러 주름을 '접어두는' 것과 같습니다. 오늘부터 양쪽으로 번갈아 씹기, 천장을 보고 잠들기 — 이 두 가지 습관만 바꿔도 얼굴의 긴장 패턴은 2주 안에 달라지기 시작해요.":"片側だけで噛む習慣は、あごの筋肉の左右差を生み、その不均衡は顔全体を包む薄い膜（筋膜）を伝わって、ほうれい線の左右差につながります。横向き寝も、片方の頬を毎日6〜7時間押し続け、シワを「折り込む」のと同じです。今日から、両側で交互に噛む・天井を見て眠る — この2つの習慣を変えるだけで、顔の緊張パターンは2週間で変わり始めます。",
+      "팔자주름이 이미 얼굴에 자리를 잡기 시작했고, 습관과 자세가 이를 매일 조금씩 깊게 만들고 있는 상태예요. 하지만 걱정하지 마세요. 얼굴은 근육과 근막으로 이루어져 있어서, 올바른 방향의 자극에는 반드시 반응한답니다.":"ほうれい線がすでに顔に定着し始め、習慣と姿勢が毎日少しずつ深くしている状態です。でも心配いりません。顔は筋肉と筋膜でできているので、正しい方向の刺激には必ず反応します。",
+      "팔자주름의 뿌리는 얼굴이 아니라 목에 있는 경우가 많아요. 고개가 앞으로 나온 거북목 자세가 되면, 목 앞쪽을 넓게 덮고 있는 근육이 얼굴 아래쪽을 하루 종일 아래로 잡아당기게 됩니다. 그 힘이 쌓여 볼 처짐과 팔자주름의 깊이로 나타나는 거예요. 광대뼈 아래를 손가락으로 지그시 고정한 채 '아–에–이–오–우'를 천천히 발음하는 이완 운동과 함께, 목 앞과 옆을 늘려주는 스트레칭을 꼭 병행해 주세요. 얼굴과 목은 하나의 구조로 연결되어 움직입니다.":"ほうれい線の根本は、顔ではなく首にあることが多いです。頭が前に出たストレートネックの姿勢になると、首の前側を広く覆う筋肉が、顔の下部を一日中下へ引っ張ります。その力が積み重なり、頬のたるみとほうれい線の深さとして現れます。頬骨の下を指でそっと固定したまま「あ–え–い–お–う」をゆっくり発音する弛緩運動とあわせて、首の前と横を伸ばすストレッチを必ず併用してください。顔と首は一つの構造としてつながって動きます。",
+      "주름, 습관, 자세 세 가지 축이 함께 얼굴의 균형을 무너뜨리고 있는 상태예요. 셀프케어만으로는 방향을 잡기 어려울 수 있어요. 이럴 때일수록 얼굴만 보는 것이 아니라, 자세와 근육의 연결까지 함께 보는 전문적인 접근이 필요하답니다.":"シワ・習慣・姿勢の3つの軸が一緒になって、顔のバランスを崩している状態です。セルフケアだけでは方向を定めにくいことがあります。こういう時こそ、顔だけを見るのではなく、姿勢と筋肉のつながりまで見る専門的なアプローチが必要です。",
+      "이 단계의 팔자주름은 피부가 아니라 '구조'의 문제예요. 볼의 지방층이 아래로 내려오고, 입 주변에서 턱, 목까지 이어지는 근육의 연결 고리가 함께 균형을 잃은 상태랍니다. 이럴 때 표면 마사지만 반복하면 이미 늘어난 조직에 자극만 더해질 수 있어요. 순서가 중요합니다. 씹는 근육과 목의 긴장을 먼저 풀고, 그다음 근육이 당기는 방향을 바로잡아야 얼굴의 균형이 돌아와요. 내 얼굴의 구조를 정확히 평가받는 것이 가장 빠르고 안전한 길입니다.":"この段階のほうれい線は、肌ではなく「構造」の問題です。頬の脂肪層が下がり、口まわりからあご、首まで続く筋肉のつながりが一緒にバランスを失っている状態です。この時に表面マッサージだけを繰り返すと、すでに伸びた組織に刺激を加えるだけになりかねません。順序が大切です。噛む筋肉と首の緊張をまず解き、その次に筋肉が引っ張る方向を正すことで、顔のバランスが戻ります。自分の顔の構造を正確に評価してもらうことが、最も速く安全な道です。",
+      "거울 속 무표정한 내 얼굴, 팔자주름이 보이나요?":"鏡の中の無表情な自分の顔、ほうれい線は見えますか？",
+      "전혀 보이지 않아요":"まったく見えません",
+      "웃을 때만 살짝 보여요":"笑った時だけ少し見えます",
+      "무표정일 때도 옅게 보여요":"無表情でも薄く見えます",
+      "무표정일 때도 뚜렷하게 패여 있어요":"無表情でもはっきり刻まれています",
+      "오후가 되면 팔자주름이 아침보다 깊어 보이나요?":"午後になると、ほうれい線が朝より深く見えますか？",
+      "차이를 느끼지 못해요":"違いは感じません",
+      "가끔 피곤한 날에만 그래요":"たまに疲れた日だけです",
+      "오후엔 자주 깊어 보여요":"午後はよく深く見えます",
+      "오후만 되면 얼굴 전체가 처져 보여요":"午後になると顔全体がたるんで見えます",
+      "입꼬리 옆 볼살이 예전보다 처지거나 두툼해 보이나요?":"口角横の頬の肉が、以前よりたるんだり厚く見えたりしますか？",
+      "변화가 없어요":"変化はありません",
+      "아주 미세하게 느껴져요":"ごくわずかに感じます",
+      "사진을 보면 확실히 달라졌어요":"写真を見ると明らかに変わりました",
+      "볼살이 팔자주름 위로 접혀 보여요":"頬の肉がほうれい線の上に折り重なって見えます",
+      "턱을 괴거나, 한쪽으로만 음식을 씹는 습관이 있나요?":"頬杖をついたり、片側だけで噛む習慣はありますか？",
+      "둘 다 해당 없어요":"どちらも当てはまりません",
+      "가끔 나도 모르게 해요":"たまに無意識にしています",
+      "하루에도 여러 번 해요":"1日に何度もしています",
+      "항상 같은 쪽으로 씹고 자주 턱을 괴어요":"いつも同じ側で噛み、よく頬杖をつきます",
+      "잠은 주로 어떤 자세로 주무시나요?":"普段はどんな姿勢で寝ていますか？",
+      "똑바로 누워서 자요":"仰向けで寝ます",
+      "가끔 옆으로 자요":"たまに横向きで寝ます",
+      "거의 매일 같은 방향으로 옆으로 자요":"ほぼ毎日同じ向きの横向きで寝ます",
+      "엎드리거나 얼굴을 베개에 묻고 자요":"うつ伏せ、または顔を枕にうずめて寝ます",
+      "나도 모르게 입이 벌어져 있거나, 입으로 숨 쉴 때가 있나요?":"無意識に口が開いていたり、口で呼吸していることはありますか？",
+      "전혀 없어요":"まったくありません",
+      "집중할 때 가끔 그래요":"集中している時にたまに",
+      "자주 그런 편이에요":"よくあるほうです",
+      "자고 일어나면 입이 말라 있을 정도예요":"起きると口が乾いているほどです",
+      "스마트폰이나 모니터를 볼 때, 고개가 앞으로 빠져 있다는 말을 듣나요?":"スマホやモニターを見る時、頭が前に出ていると言われますか？",
+      "자세가 바르다는 말을 들어요":"姿勢が良いと言われます",
+      "가끔 고개를 숙이고 있어요":"たまにうつむいています",
+      "거북목이라는 말을 들은 적 있어요":"ストレートネックと言われたことがあります",
+      "목과 어깨 통증까지 함께 있어요":"首や肩の痛みまであります",
+      "하루 중 표정 없이 보내는 시간이 얼마나 되나요?":"1日のうち、無表情で過ごす時間はどのくらいですか？",
+      "대화와 표정이 많은 편이에요":"会話も表情も多いほうです",
+      "업무 중엔 무표정이지만 자주 웃어요":"仕事中は無表情ですが、よく笑います",
+      "하루 대부분 무표정으로 보내요":"1日の大半を無表情で過ごします",
+      "얼굴 근육을 거의 쓰지 않는 것 같아요":"顔の筋肉をほとんど使っていない気がします",
+      "좌우 팔자주름의 깊이가 다르거나, 얼굴이 비대칭이라고 느끼나요?":"左右のほうれい線の深さが違ったり、顔が非対称だと感じますか？",
+      "대칭에 가까워요":"左右対称に近いです",
+      "자세히 보면 미세하게 달라요":"よく見ると少し違います",
+      "한쪽이 눈에 띄게 더 깊어요":"片側が目立って深いです",
+      "비대칭이 심해서 사진 각도를 신경 써요":"非対称がひどく、写真の角度を気にします"
+    }
+  };
+
+  var LANGS = ['ko','en','ja'];
+  var ATTRS = ['placeholder','aria-label','title','alt'];
+  var orig = new WeakMap();
+  var curLang = 'ko';
+  var obs = null;
+
+  function trimInfo(s){ var m = s.match(/^(\s*)([\s\S]*?)(\s*)$/); return {lead:m[1], core:m[2], trail:m[3]}; }
+  function lookup(lang, core){ return (DICT[lang] && Object.prototype.hasOwnProperty.call(DICT[lang], core)) ? DICT[lang][core] : undefined; }
+
+  function translateText(node, lang){
+    var cur = node.nodeValue;
+    if(lang === 'ko'){ var o = orig.get(node); if(o !== undefined && cur !== o) node.nodeValue = o; return; }
+    var src = orig.get(node);
+    var basis = (src !== undefined) ? src : cur;
+    var ti = trimInfo(basis);
+    var t = lookup(lang, ti.core);
+    if(t !== undefined){ if(src === undefined) orig.set(node, basis); var nv = ti.lead + t + ti.trail; if(cur !== nv) node.nodeValue = nv; }
+    else if(src !== undefined){ if(cur !== src) node.nodeValue = src; }
+  }
+
+  function translateAttr(el, attr, lang){
+    if(!el.hasAttribute(attr)) return;
+    el.__i18n = el.__i18n || {};
+    var src = el.__i18n[attr];
+    if(src === undefined){ src = el.getAttribute(attr); el.__i18n[attr] = src; }
+    if(lang === 'ko'){ if(el.getAttribute(attr) !== src) el.setAttribute(attr, src); return; }
+    var ti = trimInfo(src); var t = lookup(lang, ti.core);
+    el.setAttribute(attr, t !== undefined ? ti.lead + t + ti.trail : src);
+  }
+
+  function walk(root, lang){
+    if(root.nodeType === 3){ if(root.nodeValue && root.nodeValue.trim()) translateText(root, lang); return; }
+    var tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var n, texts = [];
+    while(n = tw.nextNode()) texts.push(n);
+    for(var i=0;i<texts.length;i++){ if(texts[i].nodeValue && texts[i].nodeValue.trim()) translateText(texts[i], lang); }
+    if(root.nodeType === 1){ for(var a=0;a<ATTRS.length;a++) translateAttr(root, ATTRS[a], lang); }
+    if(root.querySelectorAll){
+      var els = root.querySelectorAll('[' + ATTRS.join('],[') + ']');
+      for(var j=0;j<els.length;j++){ for(var b=0;b<ATTRS.length;b++) translateAttr(els[j], ATTRS[b], lang); }
+    }
+  }
+
+  function translateHead(lang){
+    var titleEl = document.querySelector('title');
+    if(titleEl && titleEl.firstChild) translateText(titleEl.firstChild, lang);
+    var metas = [['meta[name="description"]','content'], ['meta[property="og:title"]','content'], ['meta[property="og:description"]','content']];
+    metas.forEach(function(p){
+      var el = document.querySelector(p[0]); if(!el) return;
+      el.__i18n = el.__i18n || {};
+      var src = el.__i18n[p[1]]; if(src === undefined){ src = el.getAttribute(p[1]); el.__i18n[p[1]] = src; }
+      if(lang === 'ko'){ el.setAttribute(p[1], src); return; }
+      var ti = trimInfo(src); var t = lookup(lang, ti.core);
+      el.setAttribute(p[1], t !== undefined ? ti.lead + t + ti.trail : src);
+    });
+  }
+
+  function updateSwitcherUI(lang){
+    var btns = document.querySelectorAll('.vc-lang button');
+    for(var i=0;i<btns.length;i++){ btns[i].classList.toggle('active', btns[i].getAttribute('data-lang') === lang); }
+  }
+
+  function setLang(lang){
+    if(LANGS.indexOf(lang) < 0) lang = 'ko';
+    curLang = lang;
+    try{ localStorage.setItem('vc_lang', lang); }catch(e){}
+    document.documentElement.setAttribute('lang', lang);
+    if(obs) obs.disconnect();
+    walk(document.body, lang);
+    translateHead(lang);
+    updateSwitcherUI(lang);
+    if(obs) obs.observe(document.body, {childList:true, characterData:true, subtree:true});
+  }
+  window.vcSetLang = setLang;
+
+  obs = new MutationObserver(function(muts){
+    if(curLang === 'ko') return;
+    obs.disconnect();
+    for(var i=0;i<muts.length;i++){
+      var m = muts[i];
+      if(m.type === 'characterData'){ if(m.target.nodeValue && m.target.nodeValue.trim()) translateText(m.target, curLang); }
+      else { for(var k=0;k<m.addedNodes.length;k++){ var an = m.addedNodes[k];
+        if(an.nodeType === 3){ if(an.nodeValue && an.nodeValue.trim()) translateText(an, curLang); }
+        else if(an.nodeType === 1){ walk(an, curLang); } } }
+    }
+    obs.observe(document.body, {childList:true, characterData:true, subtree:true});
+  });
+
+  // 초기 언어 결정: 저장된 선택 > 브라우저 언어 (ko/ja 외 전부 en)
+  var initial = null;
+  try{ initial = localStorage.getItem('vc_lang'); }catch(e){}
+  if(!initial || LANGS.indexOf(initial) < 0){
+    var nav = (navigator.language || navigator.userLanguage || 'ko').toLowerCase();
+    if(nav.indexOf('ko') === 0) initial = 'ko';
+    else if(nav.indexOf('ja') === 0) initial = 'ja';
+    else initial = 'en';
+  }
+  setLang(initial);
 })();
 </script>
 </body>
