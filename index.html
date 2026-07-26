@@ -264,6 +264,26 @@
     #quiz-nasolabial-app .nq-h1{font-size:23px;line-height:1.4;margin-bottom:20px;}
   }
 
+  /* ── 카메라 + 설문을 한 화면에 (카메라 켜지면 .nq-cam-on 부여) ── */
+  #quiz-nasolabial-app.nq-cam-on{overflow:visible;}
+  /* PC: 2단 (왼쪽 카메라 · 오른쪽 설문) */
+  @media (min-width:721px){
+    #quiz-nasolabial-app.nq-cam-on{display:flex;flex-wrap:wrap;align-items:flex-start;gap:24px;max-width:880px;}
+    #quiz-nasolabial-app.nq-cam-on > .nq-cam-wrap{order:1;flex:0 0 320px;margin:0;position:sticky;top:88px;}
+    #quiz-nasolabial-app.nq-cam-on > .nq-screen{order:2;flex:1 1 360px;min-width:0;}
+    #quiz-nasolabial-app.nq-cam-on > .nq-cam-msg{order:3;flex-basis:100%;margin:6px 0 0;}
+    #quiz-nasolabial-app.nq-cam-on .nq-cam-wrap video{max-height:340px;}
+  }
+  /* 모바일: 카메라를 상단에 고정해 문항을 넘겨도 항상 보이도록 */
+  @media (max-width:720px){
+    #quiz-nasolabial-app.nq-cam-on > .nq-cam-wrap{
+      position:sticky;top:52px;z-index:5;background:#fff;padding-bottom:10px;margin-bottom:14px;
+      box-shadow:0 8px 10px -8px rgba(51,38,48,.22);
+    }
+    #quiz-nasolabial-app.nq-cam-on > .nq-cam-wrap video{max-height:190px;}
+    #quiz-nasolabial-app.nq-cam-on .nq-cam-hint{display:none;}
+  }
+
   /* 인트로 사진 슬롯 (없으면 라인 일러스트로 자동 대체) */
   #quiz-nasolabial-app .nq-photo-wrap{margin:0 auto 22px;max-width:100%;}
   #quiz-nasolabial-app .nq-photo-wrap img{
@@ -903,6 +923,7 @@
       nqStream = null;
       const v = $('nq-camVideo'); if(v) v.srcObject = null;
       const w = $('nq-camWrap'); if(w) w.style.display = 'none';
+      const appEl = $('quiz-nasolabial-app'); if(appEl) appEl.classList.remove('nq-cam-on');
     }
   };
   window.nqToggleCamera = function(){
@@ -918,6 +939,7 @@
         nqStream = stream;
         $('nq-camVideo').srcObject = stream;
         $('nq-camWrap').style.display = 'block';
+        var appEl = $('quiz-nasolabial-app'); if(appEl) appEl.classList.add('nq-cam-on');
       })
       .catch(function(){
         msg.textContent = '카메라를 열 수 없어요. 브라우저의 카메라 권한을 허용해 주세요. (https로 배포된 주소에서 정상 동작합니다)';
