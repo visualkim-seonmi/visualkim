@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>팔자주름 셀프케어 · 3분 자가 진단 | 비주얼 클리닉</title>
 <meta name="description" content="팔자주름, 나이 탓이 아닙니다. 19년차 물리치료사의 3분 자가 진단으로 진짜 원인을 확인하고 내 단계에 맞는 셀프케어 루틴을 시작하세요.">
-<meta name="theme-color" content="#FAF6F2">
+<meta name="theme-color" content="#F6F1EA">
 <link rel="canonical" href="https://visualkim.com/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%239C4A3C'/%3E%3Cpath d='M38 20 C 47 29 47 39 38 48' stroke='%23FAF6F2' stroke-width='5.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23A8624E'/%3E%3Cpath d='M38 20 C 47 29 47 39 38 48' stroke='%23FAF6F2' stroke-width='5.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 
 <!-- SNS 공유 미리보기 (OG) · og:url과 og:image는 배포 도메인 확정 후 실제 주소로 교체하세요 -->
 <meta property="og:type" content="website">
@@ -51,12 +51,14 @@
      비주얼 클리닉 디자인 토큰 (CLAUDE.md 브랜드 방향과 동일 계열)
      ============================================================ */
   :root{
-    --vc-porcelain:#FAF6F2;      /* 배경: 도자기빛 아이보리 */
-    --vc-blush:#F3E4DE;          /* 서브 배경: 연한 블러시 */
-    --vc-rosewood:#9C4A3C;       /* 포인트: 딥 로즈우드 */
-    --vc-ink:#2E2320;            /* 본문 텍스트 */
-    --vc-taupe:#8A7A72;          /* 보조 텍스트 */
-    --vc-line:#E4D6CE;           /* 구분선 */
+    --vc-porcelain:#F6F1EA;      /* 배경: 본(bone) 아이보리 */
+    --vc-blush:#EFE7DB;          /* 서브 배경: 소프트 샌드 */
+    --vc-rosewood:#A8624E;       /* 포인트: 클레이 / 테라코타 */
+    --vc-rosewood-deep:#8F4E3C;  /* 포인트 hover: 딥 클레이 */
+    --vc-ink:#221E1B;            /* 본문 텍스트: 에스프레소 */
+    --vc-taupe:#7C6F66;          /* 보조 텍스트: 토프 */
+    --vc-line:#E7DED3;           /* 구분선: 웜 헤어라인 */
+    --vc-surface:#FFFFFF;        /* 카드 표면 */
     --font-display:"Noto Serif KR", serif;
     --font-body:"Pretendard", -apple-system, sans-serif;
   }
@@ -67,7 +69,7 @@
   img{max-width:100%}
 
   /* ---- 구조 문서용 유틸: 섹션 ID 라벨 ---- */
-  section{position:relative;padding:72px 24px;border-bottom:1px solid var(--vc-line)}
+  section{position:relative;padding:86px 24px;border-bottom:1px solid var(--vc-line)}
   .sec-tag{
     display:none; /* 편집 시 이 줄을 지우면 섹션 라벨이 다시 보입니다 */
     position:absolute;top:16px;left:24px;
@@ -76,8 +78,8 @@
     padding:3px 12px;font-weight:600;
   }
   .wrap{max-width:1040px;margin:0 auto}
-  .eyebrow{font-size:13px;letter-spacing:.12em;color:var(--vc-rosewood);font-weight:700;margin-bottom:12px}
-  .sec-title{font-size:clamp(24px,3.4vw,34px);margin-bottom:14px}
+  .eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--vc-rosewood);font-weight:600;margin-bottom:15px}
+  .sec-title{font-size:clamp(25px,3.6vw,37px);letter-spacing:-.012em;line-height:1.26;margin-bottom:16px}
   .sec-desc{color:var(--vc-taupe);max-width:640px;margin-bottom:36px}
   .placeholder{
     border:1.5px dashed var(--vc-line);border-radius:14px;background:#fff;
@@ -88,10 +90,10 @@
   .grid-2{grid-template-columns:repeat(2,1fr)}
   .grid-3{grid-template-columns:repeat(3,1fr)}
   .btn{
-    display:inline-block;padding:14px 28px;border-radius:100px;font-weight:700;font-size:15px;
-    background:var(--vc-rosewood);color:#fff;cursor:not-allowed;opacity:.92;
+    display:inline-block;padding:15px 30px;border-radius:3px;font-weight:600;font-size:14px;letter-spacing:.04em;
+    background:var(--vc-rosewood);color:#fff;cursor:not-allowed;opacity:.96;
   }
-  .btn.ghost{background:transparent;color:var(--vc-rosewood);border:1.5px solid var(--vc-rosewood)}
+  .btn.ghost{background:transparent;color:var(--vc-rosewood);border:1px solid var(--vc-rosewood)}
   .note{font-size:12px;color:var(--vc-taupe);margin-top:10px}
   .disclaimer{
     margin-top:24px;font-size:13px;color:var(--vc-taupe);
@@ -103,11 +105,11 @@
   }
 
   /* ---- v6: 스텝 카드 & 썸네일 카드 ---- */
-  .step-card{background:var(--vc-porcelain);border:1px solid var(--vc-line);border-radius:16px;padding:30px 26px}
+  .step-card{background:var(--vc-porcelain);border:1px solid var(--vc-line);border-radius:8px;padding:30px 26px}
   .step-num{font-family:var(--font-display);font-size:27px;font-weight:700;color:var(--vc-rosewood);letter-spacing:.05em;display:block;margin-bottom:12px}
   .step-title{font-size:17px;font-weight:700;margin-bottom:8px}
   .step-desc{font-size:14px;color:var(--vc-taupe);line-height:1.7;word-break:keep-all}
-  .vc-card{background:#fff;border:1px solid var(--vc-line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .vc-card{background:#fff;border:1px solid var(--vc-line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
   .vc-thumb{background:var(--vc-blush);display:flex;align-items:center;justify-content:center;height:150px}
   .vc-body{padding:18px 20px 22px}
   .vc-kicker{font-size:11px;letter-spacing:.14em;color:var(--vc-rosewood);font-weight:700;margin-bottom:7px}
@@ -125,7 +127,7 @@
 
   #site-header{position:sticky;top:0;z-index:10;background:rgba(250,246,242,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--vc-line);padding:14px 24px}
   .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
-  .header-logo{font-family:var(--font-display);font-size:19px;white-space:nowrap}
+  .header-logo{font-family:var(--font-display);font-size:19px;white-space:nowrap;letter-spacing:.04em}
   .header-nav{display:flex;gap:22px;font-size:14px;color:var(--vc-taupe)}
   .header-nav a{white-space:nowrap;padding:4px 0}
   .header-actions{display:flex;gap:10px;align-items:center;font-size:13px}
@@ -176,7 +178,7 @@
   .vc-card{transition:transform .25s ease, box-shadow .25s ease}
   .vc-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(51,38,48,.10)}
   a.btn{transition:background .25s, transform .15s, box-shadow .25s}
-  a.btn:hover{box-shadow:0 8px 22px rgba(156,74,60,.25)}
+  a.btn:hover{background:var(--vc-rosewood-deep);box-shadow:0 10px 26px rgba(168,98,78,.22)}
   a.btn:active{transform:scale(.98)}
 
   /* ---- v13: 배포 준비 (폼·후기·버튼) ---- */
@@ -213,18 +215,18 @@
 =========================================================== -->
 <style id="quiz-nasolabial-style">
   #quiz-nasolabial-app{
-    --nq-ink:#332630;
-    --nq-ink-soft:#6E5E6A;
-    --nq-rose:#A8626F;
-    --nq-rose-deep:#7E4653;
-    --nq-rose-mist:#EBDCDD;
-    --nq-line:#DFD3D2;
-    --nq-porcelain:#F7F3F1;
+    --nq-ink:#221E1B;
+    --nq-ink-soft:#7C6F66;
+    --nq-rose:#A8624E;
+    --nq-rose-deep:#8F4E3C;
+    --nq-rose-mist:#EFE7DB;
+    --nq-line:#E7DED3;
+    --nq-porcelain:#F8F4EE;
     width:100%;
     max-width:560px;
     background:#fff;
     border:1px solid var(--nq-line);
-    border-radius:20px;
+    border-radius:12px;
     padding:40px 32px;
     position:relative;
     overflow:hidden;
@@ -234,7 +236,7 @@
   @media (max-width:480px){ #quiz-nasolabial-app{padding:30px 20px;} }
 
   #quiz-nasolabial-app .nq-eyebrow{font-size:12px;letter-spacing:.22em;color:var(--nq-rose);font-weight:500;text-transform:uppercase;margin-bottom:10px;text-align:center;}
-  #quiz-nasolabial-app .nq-h1{font-family:var(--font-display);font-size:26px;line-height:1.45;font-weight:700;word-break:keep-all;text-align:center;margin-bottom:24px;}
+  #quiz-nasolabial-app .nq-h1{font-family:var(--font-display);font-size:26px;line-height:1.4;font-weight:600;letter-spacing:-.01em;word-break:keep-all;text-align:center;margin-bottom:24px;}
 
   /* 카메라 아이콘 & 라이브 뷰 */
   #quiz-nasolabial-app .nq-cam-btn{
@@ -299,9 +301,9 @@
 
   #quiz-nasolabial-app a.nq-btn{text-decoration:none;text-align:center}
   #quiz-nasolabial-app .nq-btn{
-    display:block;width:100%;padding:16px;border:none;border-radius:13px;
+    display:block;width:100%;padding:16px;border:none;border-radius:3px;
     background:var(--nq-ink);color:#fff;font-family:var(--font-body);
-    font-size:16px;font-weight:500;letter-spacing:.02em;cursor:pointer;
+    font-size:15px;font-weight:600;letter-spacing:.05em;cursor:pointer;
     transition:background .25s, transform .15s;
   }
   #quiz-nasolabial-app .nq-btn:hover{background:var(--nq-rose-deep);}
@@ -318,7 +320,7 @@
   #quiz-nasolabial-app .nq-q-text{font-family:var(--font-display);font-size:19px;line-height:1.55;font-weight:600;margin-bottom:24px;min-height:60px;word-break:keep-all;}
   #quiz-nasolabial-app .nq-options{display:flex;flex-direction:column;gap:10px;}
   #quiz-nasolabial-app .nq-opt{
-    text-align:left;padding:15px 17px;border:1.5px solid var(--nq-line);border-radius:13px;
+    text-align:left;padding:15px 17px;border:1px solid var(--nq-line);border-radius:6px;
     background:#fff;font-family:var(--font-body);font-size:15px;line-height:1.5;color:var(--nq-ink);
     cursor:pointer;transition:border-color .2s, background .2s, transform .12s;word-break:keep-all;
   }
