@@ -1378,6 +1378,38 @@
   setLang(initial);
 })();
 </script>
+<!-- [GA4] 구독 퍼널 이벤트: 폼 노출(subscribe_form_view) · 폼 관여(subscribe_form_engage) -->
+<script id="vc-subscribe-tracking">
+(function(){
+  function track(name){
+    if(typeof window.gtag === 'function'){
+      window.gtag('event', name, {event_category:'newsletter', event_label:'beehiiv_subscribe'});
+    }
+  }
+  var formEl = document.querySelector('.nl-embed');
+  if(!formEl) return;
+  // 1) 폼이 화면에 노출되면 1회 전송
+  if('IntersectionObserver' in window){
+    var vSent = false;
+    var io = new IntersectionObserver(function(entries){
+      for(var i=0;i<entries.length;i++){
+        if(entries[i].isIntersecting && !vSent){ vSent = true; track('subscribe_form_view'); io.disconnect(); break; }
+      }
+    }, {threshold:0.5});
+    io.observe(formEl);
+  }
+  // 2) 사용자가 beehiiv 폼(iframe)을 클릭/관여하면 1회 전송 (교차출처 iframe 포커스 감지)
+  var eSent = false;
+  window.addEventListener('blur', function(){
+    setTimeout(function(){
+      var ae = document.activeElement;
+      if(!eSent && ae && ae.tagName === 'IFRAME' && formEl.contains(ae)){
+        eSent = true; track('subscribe_form_engage');
+      }
+    }, 0);
+  });
+})();
+</script>
 <!-- beehiiv 어트리뷰션(UTM 파라미터 전달) — 안내에 따라 body 종료 직전에 배치 -->
 <script type="text/javascript" async src="https://subscribe-forms.beehiiv.com/attribution.js"></script>
 </body>

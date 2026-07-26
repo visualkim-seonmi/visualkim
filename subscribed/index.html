@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구독 신청 완료 | 비주얼 클리닉</title>
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#F6F1EA">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23A8624E'/%3E%3Cpath d='M38 20 C 47 29 47 39 38 48' stroke='%23FAF6F2' stroke-width='5.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Google Analytics (GA4) — 본 사이트와 동일 속성 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7S10SF18T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Z7S10SF18T');
+  // ── 구독 완료 전환 이벤트 (GA4에서 sign_up을 '주요 이벤트'로 표시하면 전환으로 집계) ──
+  gtag('event', 'sign_up', { method: 'beehiiv_newsletter', event_category: 'newsletter' });
+</script>
+
+<style>
+  :root{
+    --bg:#F6F1EA; --ink:#221E1B; --sub:#7C6F66; --accent:#A8624E; --line:#E7DED3;
+    --serif:"Noto Serif KR", serif; --sans:"Pretendard", -apple-system, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.7;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{max-width:460px;width:100%;text-align:center;background:#fff;
+    border:1px solid var(--line);border-radius:12px;padding:clamp(36px,8vw,52px) 32px}
+  .mark{width:64px;height:64px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:30px;line-height:1}
+  .eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px}
+  h1{font-family:var(--serif);font-size:clamp(23px,5vw,27px);font-weight:600;letter-spacing:-.01em;line-height:1.4;margin-bottom:14px;word-break:keep-all}
+  .desc{color:var(--sub);font-size:15px;word-break:keep-all;margin-bottom:28px}
+  a.btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;
+    padding:15px 30px;border-radius:3px;font-size:14px;font-weight:600;letter-spacing:.04em;transition:background .2s}
+  a.btn:hover{background:var(--accent)}
+  .small{font-size:12px;color:#A79AA3;margin-top:20px}
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="mark" aria-hidden="true">✓</div>
+    <p class="eyebrow">Visual Clinic Newsletter</p>
+    <h1>구독 신청이 완료되었어요</h1>
+    <p class="desc">곧 첫 레터로 찾아뵐게요.<br>메일이 보이지 않으면 스팸함도 한 번 확인해 주세요 💌</p>
+    <a class="btn" href="https://visualkim.com/">홈으로 돌아가기</a>
+    <p class="small">주 1회, 언제든 구독을 해지하실 수 있어요.</p>
+  </main>
+</body>
+</html>
