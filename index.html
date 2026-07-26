@@ -253,7 +253,7 @@
   #quiz-nasolabial-app .nq-cam-hint{font-size:12px;color:var(--nq-ink-soft);margin:10px 0 10px;line-height:1.6;word-break:keep-all}
   #quiz-nasolabial-app .nq-cam-close{
     padding:9px 18px;border:1.5px solid var(--nq-line);border-radius:100px;background:#fff;
-    font-family:var(--font-body);font-size:12.5px;color:var(--nq-ink-soft);cursor:pointer;
+    font-family:var(--font-body);font-size:12.5px;color:var(--nq-ink-soft);cursor:pointer;margin-bottom:10px;
   }
   #quiz-nasolabial-app .nq-cam-close:hover{color:var(--nq-rose-deep);border-color:var(--nq-rose)}
   #quiz-nasolabial-app .nq-cam-msg{font-size:12px;color:#B4443A;margin:-6px 0 12px;text-align:center;line-height:1.6;min-height:0}
@@ -310,7 +310,7 @@
   #quiz-nasolabial-app .nq-note{margin-top:14px;font-size:12px;color:#A79AA3;text-align:center;line-height:1.6;word-break:keep-all;}
 
   /* ---- 질문 화면 ---- */
-  #quiz-nasolabial-app .nq-progress-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+  #quiz-nasolabial-app .nq-progress-head{display:flex;justify-content:space-between;align-items:center;margin:22px 0 7px;}
   #quiz-nasolabial-app .nq-q-count{font-family:var(--font-display);font-size:14px;color:var(--nq-rose-deep);font-weight:600;}
   #quiz-nasolabial-app .nq-q-axis{font-size:11px;letter-spacing:.12em;color:var(--nq-ink-soft);background:var(--nq-rose-mist);padding:4px 10px;border-radius:100px;font-weight:500;}
   #quiz-nasolabial-app .nq-progress-track{height:4px;background:var(--nq-rose-mist);border-radius:100px;overflow:hidden;margin-bottom:20px;}
@@ -466,9 +466,9 @@
         <!-- 카메라 라이브 뷰: 인트로·문항 공통 상단에 두어 테스트 진행 중에도 계속 유지됨
              (온디바이스 스트림만 표시하며 어떤 촬영·저장·전송도 하지 않습니다) -->
         <div class="nq-cam-wrap" id="nq-camWrap" style="display:none">
+          <button class="nq-cam-close" onclick="nqToggleCamera()">카메라 닫기</button>
           <video id="nq-camVideo" playsinline autoplay muted></video>
           <p class="nq-cam-hint">거울처럼 관찰해 보세요. 무표정 ↔ 미소를 반복하며 팔자 라인의 깊이를 확인!</p>
-          <button class="nq-cam-close" onclick="nqToggleCamera()">카메라 닫기</button>
         </div>
         <p class="nq-cam-msg" id="nq-camMsg" aria-live="polite"></p>
 
@@ -503,13 +503,13 @@
 
         <!-- 질문 -->
         <div class="nq-screen" id="nq-quiz">
+          <p class="nq-q-text" id="nq-qText"></p>
+          <div class="nq-options" id="nq-qOptions"></div>
           <div class="nq-progress-head">
             <span class="nq-q-count" id="nq-qCount">Q1 / 9</span>
             <span class="nq-q-axis" id="nq-qAxis">눈에 보이는 신호</span>
           </div>
           <div class="nq-progress-track"><div class="nq-progress-bar" id="nq-pBar"></div></div>
-          <p class="nq-q-text" id="nq-qText"></p>
-          <div class="nq-options" id="nq-qOptions"></div>
           <button class="nq-back-link" id="nq-backBtn" onclick="nqBack()">← 이전 문항으로</button>
         </div>
 
