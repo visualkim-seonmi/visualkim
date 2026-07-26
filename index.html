@@ -188,6 +188,9 @@
   .nl-input:focus{outline:2px solid var(--vc-rosewood);outline-offset:1px;border-color:var(--vc-rosewood)}
   .nl-msg{font-size:13px;color:#B4443A;margin-top:10px;min-height:18px}
   .nl-done{max-width:460px;margin:0 auto;background:var(--vc-blush);border-radius:12px;padding:18px;font-size:15px;font-weight:600;color:var(--vc-rosewood)}
+  /* beehiiv 임베드: 컨테이너 폭을 넘지 않게 → 모바일에서 입력칸 잘림 방지 */
+  .nl-embed{width:100%}
+  .nl-embed iframe,.nl-embed input,.nl-embed form,.nl-embed>div{max-width:100%!important}
   .review-card .vc-body{padding:24px 22px}
   .review-stars{color:var(--vc-rosewood);letter-spacing:3px;font-size:14px;margin-bottom:12px}
   .review-text{font-size:14.5px;line-height:1.75;margin-bottom:14px;word-break:keep-all}
@@ -711,18 +714,16 @@
 <!-- ────────────────────────────────────────────
   [section-newsletter] 이메일 리드 수집 (진단 외 보조 채널)
 ──────────────────────────────────────────── -->
-<section id="section-newsletter" style="background:#fff">
+<section id="section-newsletter" style="background:#fff;padding:clamp(44px,8vw,58px) 24px">
   <span class="sec-tag">#section-newsletter</span>
   <div class="wrap" style="text-align:center">
     <h2 class="sec-title">일주일에 한 번, 얼굴이 좋아지는 습관</h2>
-    <p class="sec-desc" style="margin:0 auto 24px">셀프케어 팁과 새 강좌 소식을 이메일로 보내드려요.</p>
-    <div class="nl-form" id="nl-form">
-      <input type="email" id="nl-emailInput" class="nl-input" placeholder="이메일 주소" autocomplete="email" inputmode="email" aria-label="이메일 주소" onkeydown="if(event.key==='Enter')nlSubscribe()">
-      <button class="btn" onclick="nlSubscribe()">구독하기</button>
+    <p class="sec-desc" style="margin:0 auto 14px">셀프케어 팁과 새 강좌 소식을 이메일로 보내드려요.</p>
+    <!-- beehiiv 구독 폼 임베드 (기존 입력칸+버튼 대체) · 폭/중앙정렬은 기존 폼과 동일(max-width:460px) -->
+    <div class="nl-embed" style="max-width:460px;margin:0 auto 6px;width:100%">
+      <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="08eca3b2-b5c9-4bca-b3ed-127d77f99eb2"></script>
     </div>
-    <p class="nl-msg" id="nl-msg" aria-live="polite"></p>
-    <div id="nl-done" class="nl-done" style="display:none">구독 신청 완료! 다음 레터에서 만나요 💌</div>
-    <p class="note" style="margin-top:8px">주 1회, 언제든 구독 해지할 수 있어요.</p>
+    <p class="note" style="margin-top:4px">주 1회, 언제든 구독 해지할 수 있어요.</p>
   </div>
 </section>
 
@@ -1377,5 +1378,7 @@
   setLang(initial);
 })();
 </script>
+<!-- beehiiv 어트리뷰션(UTM 파라미터 전달) — 안내에 따라 body 종료 직전에 배치 -->
+<script type="text/javascript" async src="https://subscribe-forms.beehiiv.com/attribution.js"></script>
 </body>
 </html>
