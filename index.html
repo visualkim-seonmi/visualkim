@@ -357,18 +357,17 @@
   #quiz-nasolabial-app .nq-tip-label{font-size:11px;letter-spacing:.18em;color:var(--nq-rose-deep);font-weight:700;margin-bottom:8px;}
   #quiz-nasolabial-app .nq-tip-box p{font-size:14px;line-height:1.8;color:var(--nq-ink);word-break:keep-all;}
   /* 이메일 리포트 폼 */
-  #quiz-nasolabial-app .nq-email-box{background:var(--nq-porcelain);border-radius:14px;padding:20px;margin-bottom:16px}
-  #quiz-nasolabial-app .nq-email-title{font-family:var(--font-display);font-size:16.5px;font-weight:700;margin-bottom:6px}
-  #quiz-nasolabial-app .nq-email-desc{font-size:13px;line-height:1.65;color:var(--nq-ink-soft);margin-bottom:14px;word-break:keep-all}
-  #quiz-nasolabial-app .nq-email-row{display:flex;gap:8px}
-  #quiz-nasolabial-app .nq-email-input{flex:1;min-width:0;padding:13px 14px;border:1.5px solid var(--nq-line);border-radius:11px;font-size:14px;font-family:var(--font-body);background:#fff;color:var(--nq-ink)}
-  #quiz-nasolabial-app .nq-email-input:focus{outline:2px solid var(--nq-rose);outline-offset:1px;border-color:var(--nq-rose)}
-  #quiz-nasolabial-app .nq-email-btn{padding:13px 18px;border:none;border-radius:11px;background:var(--nq-rose-deep);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s}
-  #quiz-nasolabial-app .nq-email-btn:hover{background:var(--nq-ink)}
-  #quiz-nasolabial-app .nq-email-msg{font-size:12.5px;color:#B4443A;margin-top:8px;min-height:16px}
-  #quiz-nasolabial-app .nq-email-consent{font-size:11px;color:#A79AA3;margin-top:6px;line-height:1.6}
-  #quiz-nasolabial-app .nq-email-done{text-align:center;background:var(--nq-rose-mist)}
-  @media (max-width:420px){ #quiz-nasolabial-app .nq-email-row{flex-direction:column} #quiz-nasolabial-app .nq-email-btn{width:100%} }
+  /* ---- 결과 이미지 저장(아웃라인형) 버튼 + 힌트 ---- */
+  #quiz-nasolabial-app .nq-btn-outline{
+    display:block;width:100%;padding:16px;border:1.5px solid #7E4653;border-radius:3px;
+    background:transparent;color:#7E4653;font-family:var(--font-body);
+    font-size:15px;font-weight:600;letter-spacing:.05em;cursor:pointer;
+    transition:background .25s, transform .15s;
+  }
+  #quiz-nasolabial-app .nq-btn-outline:hover{background:#EBDCDD;}
+  #quiz-nasolabial-app .nq-btn-outline:active{transform:scale(.98);}
+  #quiz-nasolabial-app .nq-btn-outline:focus-visible{outline:3px solid var(--nq-rose);outline-offset:3px;}
+  #quiz-nasolabial-app .nq-save-hint{margin:8px 0 16px;font-size:11.5px;color:#A79AA3;text-align:center;line-height:1.6;word-break:keep-all;}
 
   #quiz-nasolabial-app .nq-brand-footer{text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--nq-line);}
   #quiz-nasolabial-app .nq-sub{font-size:11.5px;color:#A79AA3;line-height:1.6;}
@@ -388,7 +387,7 @@
 <!-- ==========================================================
   Visual Clinic — 팔자주름 랜딩 (배포 준비 버전)
   · 섹션 편집은 id로 지칭: section-hero / expert / diagnosis / how-it-works / courses / reviews / carelist / newsletter
-  · 배포 전 교체 필수: ① og:url·og:image ② 분석 스크립트 ID ③ 이메일 수집 LEAD_ENDPOINT
+  · 배포 전 교체 필수: ① og:url·og:image ② 분석 스크립트 ID ③ 뉴스레터 LEAD_ENDPOINT(선택)
                        ④ 후기 예시 문구 → 실제 후기 ⑤ 푸터 사업자 정보 ⑥ 인스타그램 주소
 =========================================================== -->
 
@@ -557,21 +556,9 @@
             <p id="nq-tipText"></p>
           </div>
 
-          <!-- 이메일 리포트 신청 (퍼널의 리드 수집 지점) -->
-          <div class="nq-email-box" id="nq-emailForm">
-            <p class="nq-email-title">이 결과, 이메일로 받아보기</p>
-            <p class="nq-email-desc">상세 리포트와 내 단계에 맞는 7일 셀프케어 루틴을 함께 보내드려요.</p>
-            <div class="nq-email-row">
-              <input type="email" id="nq-emailInput" class="nq-email-input" placeholder="이메일 주소" autocomplete="email" inputmode="email" aria-label="이메일 주소" onkeydown="if(event.key==='Enter')nqSendReport()">
-              <button class="nq-email-btn" onclick="nqSendReport()">받아보기</button>
-            </div>
-            <p class="nq-email-msg" id="nq-emailMsg" aria-live="polite"></p>
-            <p class="nq-email-consent">신청 시 리포트 발송을 위한 이메일 수집·이용에 동의하게 됩니다.</p>
-          </div>
-          <div class="nq-email-box nq-email-done" id="nq-emailDone" style="display:none">
-            <p class="nq-email-title">신청 완료! 💌</p>
-            <p class="nq-email-desc">리포트가 곧 이메일로 도착합니다. 스팸함도 한 번 확인해 주세요.</p>
-          </div>
+          <!-- 결과 카드 이미지 저장 (온디바이스 전용: 서버 전송 없음) -->
+          <button class="nq-btn-outline" onclick="nqSaveResultImage()">내 결과, 이미지로 저장하기</button>
+          <p class="nq-save-hint">저장한 결과 카드를 인스타 스토리에 공유해 보세요 📸</p>
 
           <a class="nq-btn" href="#section-courses">지금 바로 해결하기</a>
 
@@ -602,8 +589,8 @@
       </div>
       <div class="step-card" id="step-2">
         <span class="step-num">STEP 2</span>
-        <p class="step-title">상세 리포트 + 7일 루틴</p>
-        <p class="step-desc">이메일로 내 유형의 원인 분석과 일주일 셀프케어 루틴을 받아보세요.</p>
+        <p class="step-title">결과 카드 저장 &amp; 공유</p>
+        <p class="step-desc">내 단계가 담긴 결과 카드를 이미지로 저장하고, 스토리에 공유해 보세요.</p>
       </div>
       <div class="step-card" id="step-3">
         <span class="step-num">STEP 3</span>
@@ -848,6 +835,9 @@
     QUESTIONS.forEach((q,i)=>{ axisScores[q.axis] += answers[i]; });
     const stage = STAGES.find(s => total>=s.min && total<=s.max);
 
+    // 결과 이미지 생성을 위한 데이터 보관 (온디바이스 전용)
+    window.nqLastResult = { total: total, axis: axisScores.slice(), stage: stage };
+
     $('nq-stageLabel').textContent = stage.label;
     $('nq-stageTitle').textContent = stage.title;
     $('nq-stageDesc').textContent = stage.desc;
@@ -907,15 +897,169 @@
     } else { done(); }
   }
 
-  window.nqSendReport = function(){
-    const email = $('nq-emailInput').value.trim();
-    const msg = $('nq-emailMsg');
-    if(!EMAIL_RE.test(email)){ msg.textContent = '이메일 주소를 다시 확인해 주세요.'; return; }
-    msg.textContent = '';
-    submitLead(email, 'quiz-report', function(){
-      $('nq-emailForm').style.display = 'none';
-      $('nq-emailDone').style.display = 'block';
-    });
+  // ── 결과 카드 이미지 생성/저장 (전 과정 온디바이스, 서버 전송 없음) ──
+  const NQ_AXIS_NAMES = ["눈에 보이는 신호","생활 습관","자세와 근육"];
+
+  function nqRoundRectPath(ctx, x, y, w, h, r){
+    if(w < r*2) r = w/2; if(h < r*2) r = h/2;
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y,   x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x,   y+h, r);
+    ctx.arcTo(x,   y+h, x,   y,   r);
+    ctx.arcTo(x,   y,   x+w, y,   r);
+    ctx.closePath();
+  }
+
+  function nqWrapLines(ctx, text, maxWidth, maxLines){
+    const words = String(text).split(/\s+/);
+    const lines = []; let line = '';
+    for(let i=0;i<words.length;i++){
+      const test = line ? line + ' ' + words[i] : words[i];
+      if(ctx.measureText(test).width > maxWidth && line){
+        lines.push(line); line = words[i];
+        if(lines.length === maxLines - 1){
+          // 남은 단어를 마지막 줄에 이어붙이고 필요 시 말줄임
+          let rest = words.slice(i).join(' ');
+          while(rest && ctx.measureText(rest + '…').width > maxWidth){ rest = rest.slice(0, -1); }
+          lines.push(ctx.measureText(words.slice(i).join(' ')).width > maxWidth ? rest + '…' : words.slice(i).join(' '));
+          return lines;
+        }
+      } else { line = test; }
+    }
+    if(line) lines.push(line);
+    return lines.slice(0, maxLines);
+  }
+
+  function nqDrawResultCard(){
+    const R = window.nqLastResult;
+    const W = 1080, H = 1350;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'alphabetic';
+
+    // 배경 + 흰색 라운드 카드
+    ctx.fillStyle = '#F7F3F1'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#FFFFFF';
+    nqRoundRectPath(ctx, 60, 60, W-120, H-120, 36); ctx.fill();
+
+    // 헤더
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#332630';
+    ctx.font = '600 34px "Noto Serif KR", serif';
+    ctx.fillText('VISUAL CLINIC', 540, 160);
+    ctx.fillStyle = '#A8626F';
+    ctx.font = '600 22px "Pretendard", sans-serif';
+    ctx.fillText('MY FOLD SCORE · 팔자주름 자가 진단', 540, 206);
+
+    // 반원 게이지
+    const cx = 540, cy = 505, rad = 205;
+    const ratio = Math.max(0, Math.min(1, R.total / 27));
+    ctx.lineCap = 'round'; ctx.lineWidth = 34;
+    ctx.strokeStyle = '#EBDCDD';
+    ctx.beginPath(); ctx.arc(cx, cy, rad, Math.PI, 2*Math.PI); ctx.stroke();
+    if(ratio > 0){
+      ctx.strokeStyle = '#A8626F';
+      ctx.beginPath(); ctx.arc(cx, cy, rad, Math.PI, Math.PI*(1+ratio)); ctx.stroke();
+    }
+    // 총점
+    ctx.fillStyle = '#7E4653';
+    ctx.font = '700 108px "Noto Serif KR", serif';
+    ctx.fillText(String(R.total), cx, cy - 4);
+    ctx.fillStyle = '#6E5E6A';
+    ctx.font = '500 30px "Pretendard", sans-serif';
+    ctx.fillText('/ 27점', cx, cy + 40);
+
+    // 단계
+    ctx.fillStyle = '#A8626F';
+    ctx.font = '600 24px "Pretendard", sans-serif';
+    ctx.fillText(R.stage.label, 540, 625);
+    ctx.fillStyle = '#332630';
+    ctx.font = '700 50px "Noto Serif KR", serif';
+    ctx.fillText(R.stage.title, 540, 695);
+
+    // 설명 (최대 4줄)
+    ctx.fillStyle = '#6E5E6A';
+    ctx.font = '27px "Pretendard", sans-serif';
+    const descLines = nqWrapLines(ctx, R.stage.desc, 860, 4);
+    for(let i=0;i<descLines.length;i++){ ctx.fillText(descLines[i], 540, 755 + i*44); }
+
+    // 축별 바 3줄
+    const barW = 800, barH = 18, barX = (W - barW)/2;
+    for(let i=0;i<3;i++){
+      const baseY = 985 + i*86;
+      const v = R.axis[i];
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#332630';
+      ctx.font = '600 26px "Pretendard", sans-serif';
+      ctx.fillText(NQ_AXIS_NAMES[i], barX, baseY);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#6E5E6A';
+      ctx.font = '26px "Pretendard", sans-serif';
+      ctx.fillText(v + ' / 9', barX + barW, baseY);
+      const trackY = baseY + 14;
+      ctx.fillStyle = '#EBDCDD';
+      nqRoundRectPath(ctx, barX, trackY, barW, barH, 9); ctx.fill();
+      const vw = barW * Math.max(0, Math.min(1, v/9));
+      if(vw > 0){ ctx.fillStyle = '#A8626F'; nqRoundRectPath(ctx, barX, trackY, vw, barH, 9); ctx.fill(); }
+    }
+
+    // 바이럴 훅 + 고지
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#7E4653';
+    ctx.font = '600 27px "Pretendard", sans-serif';
+    ctx.fillText('나도 3분 진단해보기 → 비주얼 클리닉', 540, 1240);
+    ctx.fillStyle = '#A79AA3';
+    ctx.font = '19px "Pretendard", sans-serif';
+    ctx.fillText('본 테스트는 자가 점검용이며 의학적 진단을 대신하지 않습니다.', 540, 1282);
+
+    return canvas;
+  }
+
+  function nqDownloadCanvas(canvas, filename){
+    try {
+      canvas.toBlob(function(blob){
+        if(!blob){ nqDownloadDataUrl(canvas, filename); return; }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+      }, 'image/png');
+    } catch(e){ nqDownloadDataUrl(canvas, filename); }
+  }
+  function nqDownloadDataUrl(canvas, filename){
+    try {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png'); a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch(e){}
+  }
+
+  window.nqSaveResultImage = function(){
+    if(!window.nqLastResult){ return; }
+    const filename = '팔자주름_진단결과.png';
+    const run = function(){
+      let canvas;
+      try { canvas = nqDrawResultCard(); }
+      catch(e){ return; }
+      // 모바일: 공유 시트 / PC: 다운로드
+      const isMobile = (navigator.maxTouchPoints > 0) && /Android|iPhone|iPad|iPod|Mobile|Silk|Kindle/i.test(navigator.userAgent);
+      canvas.toBlob(function(blob){
+        let file = null;
+        if(blob){ try { file = new File([blob], filename, {type:'image/png'}); } catch(e){ file = null; } }
+        if(isMobile && file && navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
+          navigator.share({ files:[file], title:'팔자주름 자가 진단 결과' })
+            .catch(function(){ if(blob){ nqDownloadCanvas(canvas, filename); } });
+        } else {
+          nqDownloadCanvas(canvas, filename);
+        }
+      }, 'image/png');
+    };
+    if(document.fonts && document.fonts.ready && document.fonts.ready.then){
+      document.fonts.ready.then(run, run);
+    } else { run(); }
   };
 
   // ── 카메라 라이브 뷰 (온디바이스 전용: 촬영·저장·전송 없음) ──
@@ -1018,21 +1162,16 @@
       "← 이전 문항으로":"← Previous question",
       "/ 27점":"/ 27 pts",
       "축별 점검 결과":"Results by axis",
-      "이 결과, 이메일로 받아보기":"Get this result by email",
-      "상세 리포트와 내 단계에 맞는 7일 셀프케어 루틴을 함께 보내드려요.":"We'll send a detailed report plus a 7-day self-care routine matched to your stage.",
-      "이메일 주소":"Email address",
-      "받아보기":"Get it",
-      "신청 시 리포트 발송을 위한 이메일 수집·이용에 동의하게 됩니다.":"By signing up, you agree to the collection and use of your email to send the report.",
-      "신청 완료! 💌":"You're all set! 💌",
-      "리포트가 곧 이메일로 도착합니다. 스팸함도 한 번 확인해 주세요.":"Your report will arrive by email shortly. Please check your spam folder too.",
+      "내 결과, 이미지로 저장하기":"Save my result as an image",
+      "저장한 결과 카드를 인스타 스토리에 공유해 보세요 📸":"Share your saved result card to your Instagram story 📸",
       "지금 바로 해결하기":"Solve it now",
       "19년차 물리치료사 · 얼굴 교정 전문가 김선미":"Kim Seon-mi · Facial Correction Specialist, Physical Therapist (19 yrs)",
       "본 테스트는 자가 점검용이며 의학적 진단을 대신하지 않습니다.":"This test is for self-check and does not replace a medical diagnosis.",
       "비주얼 클리닉이 함께하는 방법":"How Visual Clinic works with you",
       "3분 자가 진단":"3-minute self check",
       "9개 문항으로 내 팔자주름의 단계와 원인 축(신호·습관·자세)을 확인해요.":"Nine questions reveal your nasolabial fold stage and its cause axes (signs · habits · posture).",
-      "상세 리포트 + 7일 루틴":"Detailed report + 7-day routine",
-      "이메일로 내 유형의 원인 분석과 일주일 셀프케어 루틴을 받아보세요.":"Receive a cause analysis for your type and a one-week self-care routine by email.",
+      "결과 카드 저장 & 공유":"Save & share your result card",
+      "내 단계가 담긴 결과 카드를 이미지로 저장하고, 스토리에 공유해 보세요.":"Save a result card with your stage as an image and share it to your story.",
       "맞춤 강좌로 홈케어 시작":"Start home care with a tailored course",
       "내 단계에 맞는 동영상 강좌로 거울 앞 습관을 바꿔갑니다.":"Change your habits in front of the mirror with a video course matched to your stage.",
       "전문가의 손길을 우리 집 거울 앞으로":"Bring an expert's touch to your own mirror",
@@ -1166,21 +1305,16 @@
       "← 이전 문항으로":"← 前の質問へ",
       "/ 27점":"/ 27点",
       "축별 점검 결과":"軸別の診断結果",
-      "이 결과, 이메일로 받아보기":"この結果をメールで受け取る",
-      "상세 리포트와 내 단계에 맞는 7일 셀프케어 루틴을 함께 보내드려요.":"詳細レポートと、あなたの段階に合った7日間のセルフケアを一緒にお送りします。",
-      "이메일 주소":"メールアドレス",
-      "받아보기":"受け取る",
-      "신청 시 리포트 발송을 위한 이메일 수집·이용에 동의하게 됩니다.":"お申し込みにより、レポート送付のためのメールアドレスの収集・利用に同意したものとみなされます。",
-      "신청 완료! 💌":"お申し込み完了！💌",
-      "리포트가 곧 이메일로 도착합니다. 스팸함도 한 번 확인해 주세요.":"レポートは間もなくメールで届きます。迷惑メールフォルダもご確認ください。",
+      "내 결과, 이미지로 저장하기":"結果を画像として保存する",
+      "저장한 결과 카드를 인스타 스토리에 공유해 보세요 📸":"保存した結果カードをインスタのストーリーでシェアしてみましょう 📸",
       "지금 바로 해결하기":"今すぐ解決する",
       "19년차 물리치료사 · 얼굴 교정 전문가 김선미":"経験19年の理学療法士・顔矯正スペシャリスト キム・ソンミ",
       "본 테스트는 자가 점검용이며 의학적 진단을 대신하지 않습니다.":"本テストはセルフチェック用であり、医学的診断に代わるものではありません。",
       "비주얼 클리닉이 함께하는 방법":"ビジュアルクリニックのご利用の流れ",
       "3분 자가 진단":"3分セルフ診断",
       "9개 문항으로 내 팔자주름의 단계와 원인 축(신호·습관·자세)을 확인해요.":"9つの質問で、ほうれい線の段階と原因の軸（兆候・習慣・姿勢）を確認します。",
-      "상세 리포트 + 7일 루틴":"詳細レポート＋7日間ルーティン",
-      "이메일로 내 유형의 원인 분석과 일주일 셀프케어 루틴을 받아보세요.":"あなたのタイプの原因分析と1週間のセルフケアをメールで受け取れます。",
+      "결과 카드 저장 & 공유":"結果カードの保存＆シェア",
+      "내 단계가 담긴 결과 카드를 이미지로 저장하고, 스토리에 공유해 보세요.":"あなたの段階を記した結果カードを画像として保存し、ストーリーでシェアしましょう。",
       "맞춤 강좌로 홈케어 시작":"自分に合った講座でホームケア開始",
       "내 단계에 맞는 동영상 강좌로 거울 앞 습관을 바꿔갑니다.":"あなたの段階に合った動画講座で、鏡の前の習慣を変えていきます。",
       "전문가의 손길을 우리 집 거울 앞으로":"専門家の手わざを、自宅の鏡の前へ",
