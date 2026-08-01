@@ -160,6 +160,16 @@
   .cm-enroll:hover{background:var(--vc-rosewood-deep)}
   .cm-foot{font-size:12px;color:#A79AA3;text-align:center;margin-top:12px;line-height:1.6;word-break:keep-all}
   @media (max-width:480px){ .cm-scroll{padding:32px 20px 24px} .cm-title{font-size:21px} }
+
+  /* ---- 방문 예약 모달 (구글 캘린더 임베드) ---- */
+  .bk-overlay{position:fixed;inset:0;z-index:1000;background:rgba(34,30,27,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .2s}
+  .bk-overlay[hidden]{display:none}
+  .bk-overlay.bk-open{opacity:1}
+  .bk-panel{background:#fff;border-radius:14px;width:100%;max-width:760px;height:min(86vh,780px);position:relative;box-shadow:0 24px 60px rgba(34,30,27,.28);overflow:hidden;transform:translateY(10px);transition:transform .2s}
+  .bk-overlay.bk-open .bk-panel{transform:translateY(0)}
+  .bk-close{position:absolute;top:8px;right:10px;z-index:2;background:rgba(255,255,255,.92);border:none;font-size:26px;line-height:1;color:var(--vc-taupe);cursor:pointer;width:38px;height:38px;border-radius:50%}
+  .bk-close:hover{background:var(--vc-blush);color:var(--vc-ink)}
+  #bk-frame{width:100%;height:100%;border:0;display:block;background:#F6F1EA}
   .vc-thumb svg .ln{stroke:#8A5A50;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .vc-thumb svg .ac{stroke:var(--vc-rosewood);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .vc-thumb svg .fl{fill:#fff;stroke:#8A5A50;stroke-width:2}
@@ -681,7 +691,7 @@
           <p class="vc-kicker">OFFLINE 1:1 CARE</p>
           <p class="vc-title">비주얼 클리닉 방문 케어</p>
           <p class="vc-meta">김선미 대표가 직접 얼굴과 자세의 구조를 평가하고, 나에게 맞는 1:1 케어를 진행합니다 · 서울 청담동</p>
-          <a class="btn ghost card-cta" href="https://whattime.co.kr/realign/visualclinic" target="_blank" rel="noopener">방문 예약하기</a>
+          <button class="btn ghost card-cta" onclick="openBookingModal()">방문 예약하기</button>
         </div>
       </div>
 
@@ -800,6 +810,47 @@
     // 미연동 → 안전 폴백: 사전 등록(뉴스레터) 이동 + 모달 닫기 (기본 앵커 동작 유지)
     window.closeCourseModal();
   };
+})();
+</script>
+
+<!-- ────────────────────────────────────────────
+  [booking-modal] 방문 예약 — 구글 캘린더 예약(Appointment Scheduling) 임베드
+  · 대표님 구글 캘린더에서 '예약 일정'을 만들고 임베드 URL(…/appointments/schedules/…?gv=true)을
+    아래 BOOKING_URL(또는 window.VC_BOOKING_URL)에 넣으면 페이지 내 모달로 예약이 열립니다.
+  · 비어 있으면 기존 whattime 예약 링크(새 탭)로 안전 폴백.
+──────────────────────────────────────────── -->
+<div class="bk-overlay" id="bookingModal" hidden>
+  <div class="bk-panel" role="dialog" aria-modal="true" aria-label="방문 예약">
+    <button class="bk-close" onclick="closeBookingModal()" aria-label="닫기">&times;</button>
+    <iframe id="bk-frame" title="방문 예약" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</div>
+<script id="booking-modal-script">
+(function(){
+  // 구글 캘린더 예약 페이지 URL (예: https://calendar.google.com/calendar/appointments/schedules/XXXX?gv=true)
+  var BOOKING_URL = window.VC_BOOKING_URL || '';
+  var BOOKING_FALLBACK = 'https://whattime.co.kr/realign/visualclinic';
+  var bm = function(){ return document.getElementById('bookingModal'); };
+
+  window.openBookingModal = function(){
+    if(!BOOKING_URL){ window.open(BOOKING_FALLBACK, '_blank', 'noopener'); return; }
+    var el = bm();
+    if(!el){ window.open(BOOKING_URL, '_blank', 'noopener'); return; }
+    var f = document.getElementById('bk-frame');
+    if(f && !f.getAttribute('src')){ f.setAttribute('src', BOOKING_URL); } // 열 때만 로드
+    el.hidden = false;
+    requestAnimationFrame(function(){ el.classList.add('bk-open'); });
+    document.body.style.overflow = 'hidden';
+    var c = el.querySelector('.bk-close'); if(c) c.focus();
+  };
+  window.closeBookingModal = function(){
+    var el = bm(); if(!el) return;
+    el.classList.remove('bk-open');
+    document.body.style.overflow = '';
+    setTimeout(function(){ el.hidden = true; }, 200);
+  };
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ var el=bm(); if(el && !el.hidden) window.closeBookingModal(); }});
+  var el0 = bm(); if(el0){ el0.addEventListener('click', function(e){ if(e.target===this) window.closeBookingModal(); }); }
 })();
 </script>
 
