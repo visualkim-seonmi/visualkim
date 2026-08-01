@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수강 신청 완료 | 비주얼 클리닉</title>
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#F6F1EA">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23A8624E'/%3E%3Cpath d='M38 20 C 47 29 47 39 38 48' stroke='%23FAF6F2' stroke-width='5.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Google Analytics (GA4) — 본 사이트와 동일 속성 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7S10SF18T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Z7S10SF18T');
+</script>
+
+<style>
+  :root{
+    --bg:#F6F1EA; --ink:#221E1B; --sub:#7C6F66; --accent:#A8624E; --accent-deep:#8F4E3C; --line:#E7DED3;
+    --serif:"Noto Serif KR", serif; --sans:"Pretendard", -apple-system, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.7;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{max-width:460px;width:100%;text-align:center;background:#fff;
+    border:1px solid var(--line);border-radius:12px;padding:clamp(36px,8vw,52px) 32px}
+  .mark{width:64px;height:64px;border-radius:50%;color:#fff;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:30px;line-height:1}
+  .mark.ok{background:var(--accent)}
+  .mark.bad{background:#B4736A}
+  .spin{width:44px;height:44px;border:3px solid var(--line);border-top-color:var(--accent);
+    border-radius:50%;margin:0 auto 22px;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px}
+  h1{font-family:var(--serif);font-size:clamp(22px,5vw,26px);font-weight:600;letter-spacing:-.01em;line-height:1.4;margin-bottom:14px;word-break:keep-all}
+  .desc{color:var(--sub);font-size:15px;word-break:keep-all;margin-bottom:28px}
+  a.btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;
+    padding:15px 30px;border-radius:3px;font-size:14px;font-weight:600;letter-spacing:.04em;transition:background .2s}
+  a.btn:hover{background:var(--accent)}
+  .small{font-size:12px;color:#A79AA3;margin-top:20px}
+</style>
+</head>
+<body>
+  <main class="card">
+    <div id="loading">
+      <div class="spin" aria-hidden="true"></div>
+      <p class="desc" style="margin-bottom:0">결제를 확인하고 있어요…</p>
+    </div>
+
+    <div id="done" style="display:none">
+      <div class="mark ok" aria-hidden="true">✓</div>
+      <p class="eyebrow">Visual Clinic</p>
+      <h1>수강 신청이 완료되었어요</h1>
+      <p class="desc">결제가 정상 승인되었습니다.<br>수강 안내를 이메일로 보내드릴게요 💌</p>
+      <a class="btn" href="https://visualkim.com/">홈으로 돌아가기</a>
+      <p class="small" id="orderInfo"></p>
+    </div>
+
+    <div id="failbox" style="display:none">
+      <div class="mark bad" aria-hidden="true">!</div>
+      <p class="eyebrow">Visual Clinic</p>
+      <h1>결제를 완료하지 못했어요</h1>
+      <p class="desc" id="failDesc">결제가 취소되었거나 승인에 실패했습니다. 다시 시도해 주세요.</p>
+      <a class="btn" href="https://visualkim.com/#section-courses">강좌로 돌아가기</a>
+    </div>
+  </main>
+
+<script>
+(function(){
+  var q = new URLSearchParams(location.search);
+  var $ = function(id){ return document.getElementById(id); };
+  function show(id){ ['loading','done','failbox'].forEach(function(x){ $(x).style.display = (x===id)?'block':'none'; }); }
+
+  // 결제창에서 실패/취소로 돌아온 경우
+  if (q.get('fail')) {
+    show('failbox');
+    var m = q.get('message'); if (m) $('failDesc').textContent = m;
+    return;
+  }
+
+  var paymentKey = q.get('paymentKey'), orderId = q.get('orderId'), amount = q.get('amount');
+  if (!paymentKey || !orderId || !amount) {
+    show('failbox');
+    $('failDesc').textContent = '결제 정보가 없어요. 강좌 페이지에서 다시 신청해 주세요.';
+    return;
+  }
+
+  show('loading');
+  fetch('/api/confirm-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paymentKey: paymentKey, orderId: orderId, amount: Number(amount) })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d && d.ok) {
+      show('done');
+      $('orderInfo').textContent = '주문번호 ' + orderId;
+      // GA4 구매 전환 이벤트
+      if (window.gtag) gtag('event', 'purchase', {
+        transaction_id: orderId, value: Number(amount), currency: 'KRW',
+        items: [{ item_name: d.orderName || '팔자주름 14일 홈케어' }]
+      });
+    } else {
+      show('failbox');
+      $('failDesc').textContent = (d && d.message) || '결제 승인에 실패했어요.';
+    }
+  })
+  .catch(function(){
+    show('failbox');
+    $('failDesc').textContent = '승인 확인 중 오류가 발생했어요. 결제가 되었는지 확인 후 문의해 주세요.';
+  });
+})();
+</script>
+</body>
+</html>

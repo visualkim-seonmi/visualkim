@@ -785,7 +785,7 @@
       var toss = window.TossPayments(cfg.tossClientKey);
       toss.requestPayment('카드', {
         amount: cfg.amount, orderId: 'vc-'+Date.now(), orderName: cfg.orderName,
-        successUrl: location.origin + '/course-success', failUrl: location.origin + '/?pay=fail'
+        successUrl: location.origin + '/course-success', failUrl: location.origin + '/course-success?fail=1'
       });
     }catch(err){ window.location.hash='#section-newsletter'; }
   }
