@@ -727,7 +727,7 @@
         <span class="cm-price-note">(오픈 예정가)</span>
       </div>
 
-      <a class="cm-enroll" id="cm-enroll" href="#section-newsletter" onclick="closeCourseModal()">사전 등록하고 오픈 알림 받기</a>
+      <a class="cm-enroll" id="cm-enroll" href="#section-newsletter" onclick="cmEnroll(event)">사전 등록하고 오픈 알림 받기</a>
       <p class="cm-foot">결제 오픈 시 이 화면에서 바로 수강 신청할 수 있어요.</p>
     </div>
   </div>
@@ -750,6 +750,56 @@
   };
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var el=m(); if(el && !el.hidden) window.closeCourseModal(); }});
   var mm=m(); if(mm){ mm.addEventListener('click',function(e){ if(e.target===this) window.closeCourseModal(); }); }
+
+  /* ══════════════════════════════════════════════════════════════════
+     [결제 레일 · 언어별]  한국어 → 국내 결제(토스페이먼츠)
+                          영어·일본어 → 해외 결제(Lemon Squeezy)
+     · 아래 값만 채우면 활성화. 비어 있으면 '사전 등록(뉴스레터)'으로 안전 폴백
+       (지금은 미설정 상태라 아무도 결제되지 않고 외부 SDK도 로드되지 않음).
+     · 국내(토스): clientKey를 넣으면 결제창까지 열림. 단, 결제 '최종 승인'은
+       successUrl(/course-success) 이후 서버리스 확인(시크릿키)이 필요 —
+       토스 계정 준비되면 /api 확인 엔드포인트+성공 페이지를 추가 구현.
+     · 해외(LS): 상품 체크아웃 URL만 넣으면 오버레이로 즉시 동작.
+     · window.VC_PAY 로 덮어쓸 수 있음(별도 <script>에서 설정 가능).
+     ══════════════════════════════════════════════════════════════════ */
+  var DEF = { ko:{ tossClientKey:'', amount:99000, orderName:'팔자주름 14일 홈케어' }, intl:{ checkoutUrl:'' } };
+  var VC = window.VC_PAY || {};
+  var PAY = { ko: Object.assign({}, DEF.ko, VC.ko||{}), intl: Object.assign({}, DEF.intl, VC.intl||{}) };
+
+  function curLang(){
+    var l = String(localStorage.getItem('vc_lang') || document.documentElement.lang || 'ko').toLowerCase().slice(0,2);
+    return (l==='en'||l==='ja') ? l : 'ko';
+  }
+  function loadScript(src,id){ if(document.getElementById(id)) return; var s=document.createElement('script'); s.src=src; s.async=true; s.id=id; document.head.appendChild(s); }
+  // 설정된 레일만 외부 SDK 지연 로드 (미설정 시 외부요청 0건)
+  if(PAY.intl.checkoutUrl){ loadScript('https://assets.lemonsqueezy.com/lemon.js','ls-js'); }
+  if(PAY.ko.tossClientKey){ loadScript('https://js.tosspayments.com/v1/payment','toss-js'); }
+
+  function openIntlCheckout(url){
+    if(window.LemonSqueezy && window.LemonSqueezy.Url && window.LemonSqueezy.Url.Open){ window.LemonSqueezy.Url.Open(url); }
+    else { window.open(url,'_blank','noopener'); }
+  }
+  function openDomesticCheckout(cfg){
+    if(!window.TossPayments){ window.location.hash='#section-newsletter'; return; }
+    try{
+      var toss = window.TossPayments(cfg.tossClientKey);
+      toss.requestPayment('카드', {
+        amount: cfg.amount, orderId: 'vc-'+Date.now(), orderName: cfg.orderName,
+        successUrl: location.origin + '/course-success', failUrl: location.origin + '/?pay=fail'
+      });
+    }catch(err){ window.location.hash='#section-newsletter'; }
+  }
+
+  window.cmEnroll = function(e){
+    var lang = curLang();
+    if(lang==='ko'){
+      if(PAY.ko.tossClientKey){ if(e) e.preventDefault(); openDomesticCheckout(PAY.ko); return; }
+    }else{
+      if(PAY.intl.checkoutUrl){ if(e) e.preventDefault(); openIntlCheckout(PAY.intl.checkoutUrl); window.closeCourseModal(); return; }
+    }
+    // 미연동 → 안전 폴백: 사전 등록(뉴스레터) 이동 + 모달 닫기 (기본 앵커 동작 유지)
+    window.closeCourseModal();
+  };
 })();
 </script>
 
