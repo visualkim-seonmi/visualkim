@@ -130,6 +130,36 @@
   .vc-title{font-size:16.5px;font-weight:700;line-height:1.45;margin-bottom:7px;word-break:keep-all}
   .vc-meta{font-size:13px;color:var(--vc-taupe);line-height:1.6;word-break:keep-all}
   .card-cta{display:block;text-align:center;margin-top:14px;padding:13px;font-size:14.5px;border-radius:12px}
+
+  /* ---- 온라인 강좌 상세 모달 (페이지 내 수강 신청) ---- */
+  .cm-overlay{position:fixed;inset:0;z-index:1000;background:rgba(34,30,27,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s}
+  .cm-overlay[hidden]{display:none}
+  .cm-overlay.cm-open{opacity:1}
+  .cm-panel{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:88vh;position:relative;box-shadow:0 24px 60px rgba(34,30,27,.28);transform:translateY(10px);transition:transform .2s}
+  .cm-overlay.cm-open .cm-panel{transform:translateY(0)}
+  .cm-close{position:absolute;top:10px;right:12px;z-index:2;background:transparent;border:none;font-size:28px;line-height:1;color:var(--vc-taupe);cursor:pointer;width:38px;height:38px;border-radius:50%}
+  .cm-close:hover{background:var(--vc-blush);color:var(--vc-ink)}
+  .cm-scroll{overflow-y:auto;max-height:88vh;padding:36px 30px 30px}
+  .cm-eyebrow{font-size:11px;letter-spacing:.22em;color:var(--vc-rosewood);font-weight:600;margin-bottom:8px}
+  .cm-title{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;word-break:keep-all}
+  .cm-sub{font-size:14px;color:var(--vc-taupe);margin-bottom:22px;word-break:keep-all}
+  .cm-head{font-size:12px;letter-spacing:.1em;color:var(--vc-ink);font-weight:700;margin-bottom:11px;text-transform:uppercase}
+  .cm-includes{margin-bottom:22px}
+  .cm-includes ul{list-style:none}
+  .cm-includes li{position:relative;padding-left:26px;font-size:14px;color:var(--vc-ink);line-height:1.5;margin-bottom:9px;word-break:keep-all}
+  .cm-includes li::before{content:"✓";position:absolute;left:2px;top:0;color:var(--vc-rosewood);font-weight:700}
+  .cm-curriculum{margin-bottom:22px;border-top:1px solid var(--vc-line);padding-top:18px}
+  .cm-day{display:flex;gap:14px;align-items:baseline;padding:7px 0}
+  .cm-day-no{font-size:12px;font-weight:700;color:var(--vc-rosewood);white-space:nowrap;min-width:82px;letter-spacing:.03em}
+  .cm-day-t{font-size:14px;color:var(--vc-ink);word-break:keep-all}
+  .cm-price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:#F6F1EA;border-radius:10px;padding:16px 18px;margin-bottom:18px}
+  .cm-price-label{font-size:13px;color:var(--vc-taupe)}
+  .cm-price-val{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--vc-ink)}
+  .cm-price-note{font-size:12px;color:var(--vc-taupe)}
+  .cm-enroll{display:block;width:100%;text-align:center;background:var(--vc-rosewood);color:#fff;text-decoration:none;padding:15px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:.03em;box-sizing:border-box;transition:background .2s}
+  .cm-enroll:hover{background:var(--vc-rosewood-deep)}
+  .cm-foot{font-size:12px;color:#A79AA3;text-align:center;margin-top:12px;line-height:1.6;word-break:keep-all}
+  @media (max-width:480px){ .cm-scroll{padding:32px 20px 24px} .cm-title{font-size:21px} }
   .vc-thumb svg .ln{stroke:#8A5A50;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .vc-thumb svg .ac{stroke:var(--vc-rosewood);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .vc-thumb svg .fl{fill:#fff;stroke:#8A5A50;stroke-width:2}
@@ -639,7 +669,7 @@
           <p class="vc-kicker">SIGNATURE COURSE</p>
           <p class="vc-title">팔자주름 14일 홈케어</p>
           <p class="vc-meta">하루 10분, 근막과 습관을 함께 바꾸는 기본 루틴 · KRW/USD · 미리보기 2강 무료</p>
-          <a class="btn card-cta" href="https://class.visualclinic.com/COURSE_URL" target="_blank" rel="noopener">강좌 보러가기</a>
+          <button class="btn card-cta" onclick="openCourseModal()">강좌 보러가기</button>
         </div>
       </div>
 
@@ -659,6 +689,69 @@
     </div>
   </div>
 </section>
+
+<!-- ────────────────────────────────────────────
+  [course-modal] 온라인 강좌 상세 · 수강 신청 (페이지 내 모달)
+  · 결제 연동 시: #cm-enroll 버튼의 href/onclick을 실제 결제(토스·포트원·LemonSqueezy 등)에 연결.
+    현재는 사전 등록(#section-newsletter)으로 연결된 안전 상태 — 아무도 결제되지 않음.
+  · 수강료(₩99,000)는 오픈 예정가 플레이스홀더 — 실제 가격 확정 시 .cm-price-val 교체.
+──────────────────────────────────────────── -->
+<div class="cm-overlay" id="courseModal" hidden>
+  <div class="cm-panel" role="dialog" aria-modal="true" aria-labelledby="cm-title">
+    <button class="cm-close" onclick="closeCourseModal()" aria-label="닫기">&times;</button>
+    <div class="cm-scroll">
+      <p class="cm-eyebrow">ONLINE COURSE</p>
+      <h3 class="cm-title" id="cm-title">팔자주름 14일 홈케어</h3>
+      <p class="cm-sub">하루 10분, 집에서 시작하는 셀프케어 루틴</p>
+
+      <div class="cm-includes">
+        <p class="cm-head">이런 걸 배워요</p>
+        <ul>
+          <li>14일 데일리 영상 강의 · 하루 10분</li>
+          <li>진단 결과에 맞춘 단계별 셀프케어 루틴</li>
+          <li>근막·습관·자세를 함께 잡는 통합 가이드</li>
+          <li>기간 제한 없는 무제한 다시보기</li>
+        </ul>
+      </div>
+
+      <div class="cm-curriculum">
+        <p class="cm-head">커리큘럼</p>
+        <div class="cm-day"><span class="cm-day-no">DAY 1–3</span><span class="cm-day-t">내 얼굴 구조 이해하기</span></div>
+        <div class="cm-day"><span class="cm-day-no">DAY 4–9</span><span class="cm-day-t">근막 이완과 습관 교정</span></div>
+        <div class="cm-day"><span class="cm-day-no">DAY 10–14</span><span class="cm-day-t">라인 정돈과 유지 루틴</span></div>
+      </div>
+
+      <div class="cm-price">
+        <span class="cm-price-label">수강료</span>
+        <span class="cm-price-val">₩99,000</span>
+        <span class="cm-price-note">(오픈 예정가)</span>
+      </div>
+
+      <a class="cm-enroll" id="cm-enroll" href="#section-newsletter" onclick="closeCourseModal()">사전 등록하고 오픈 알림 받기</a>
+      <p class="cm-foot">결제 오픈 시 이 화면에서 바로 수강 신청할 수 있어요.</p>
+    </div>
+  </div>
+</div>
+<script id="course-modal-script">
+(function(){
+  var m=function(){ return document.getElementById('courseModal'); };
+  window.openCourseModal=function(){
+    var el=m(); if(!el) return;
+    el.hidden=false;
+    requestAnimationFrame(function(){ el.classList.add('cm-open'); });
+    document.body.style.overflow='hidden';
+    var c=el.querySelector('.cm-close'); if(c) c.focus();
+  };
+  window.closeCourseModal=function(){
+    var el=m(); if(!el) return;
+    el.classList.remove('cm-open');
+    document.body.style.overflow='';
+    setTimeout(function(){ el.hidden=true; }, 200);
+  };
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var el=m(); if(el && !el.hidden) window.closeCourseModal(); }});
+  var mm=m(); if(mm){ mm.addEventListener('click',function(e){ if(e.target===this) window.closeCourseModal(); }); }
+})();
+</script>
 
 <!-- ────────────────────────────────────────────
   [section-reviews] 후기 · 변화 사례 (+ 필수 고지 컴포넌트)
@@ -1192,6 +1285,20 @@
       "거울 앞 10분 홈케어로 시작하세요. 더 깊은 케어가 필요하다면, 서울 리얼라인 센터에서 직접 만나요.":"Start with 10 minutes of home care in front of the mirror. If you need deeper care, meet us in person at the Realign center in Seoul.",
       "팔자주름 14일 홈케어":"14-Day Nasolabial Home Care",
       "하루 10분, 근막과 습관을 함께 바꾸는 기본 루틴 · KRW/USD · 미리보기 2강 무료":"10 minutes a day — a basic routine that changes fascia and habits together · KRW/USD · 2 preview lessons free",
+      "하루 10분, 집에서 시작하는 셀프케어 루틴":"10 minutes a day — self-care you can start at home",
+      "이런 걸 배워요":"What you'll learn",
+      "14일 데일리 영상 강의 · 하루 10분":"14 daily video lessons · 10 minutes a day",
+      "진단 결과에 맞춘 단계별 셀프케어 루틴":"A step-by-step self-care routine matched to your diagnosis",
+      "근막·습관·자세를 함께 잡는 통합 가이드":"An integrated guide addressing fascia, habits, and posture together",
+      "기간 제한 없는 무제한 다시보기":"Unlimited replay with no time limit",
+      "커리큘럼":"Curriculum",
+      "내 얼굴 구조 이해하기":"Understand your facial structure",
+      "근막 이완과 습관 교정":"Fascia release & habit correction",
+      "라인 정돈과 유지 루틴":"Refining the line & maintenance routine",
+      "수강료":"Price",
+      "(오픈 예정가)":"(launch price)",
+      "사전 등록하고 오픈 알림 받기":"Pre-register for launch updates",
+      "결제 오픈 시 이 화면에서 바로 수강 신청할 수 있어요.":"When checkout opens, you'll be able to enroll right here.",
       "강좌 보러가기":"View the course",
       "비주얼 클리닉 방문 케어":"Visual Clinic In-Person Care",
       "김선미 대표가 직접 얼굴과 자세의 구조를 평가하고, 나에게 맞는 1:1 케어를 진행합니다 · 서울 청담동":"Kim Seon-mi personally assesses your facial and postural structure and provides 1:1 care tailored to you · Cheongdam, Seoul",
@@ -1336,6 +1443,20 @@
       "거울 앞 10분 홈케어로 시작하세요. 더 깊은 케어가 필요하다면, 서울 리얼라인 센터에서 직접 만나요.":"鏡の前で10分のホームケアから始めましょう。より深いケアが必要なら、ソウルのリアラインセンターで直接お会いします。",
       "팔자주름 14일 홈케어":"ほうれい線14日ホームケア",
       "하루 10분, 근막과 습관을 함께 바꾸는 기본 루틴 · KRW/USD · 미리보기 2강 무료":"1日10分、筋膜と習慣を一緒に変える基本ルーティン・KRW/USD・プレビュー2レッスン無料",
+      "하루 10분, 집에서 시작하는 셀프케어 루틴":"1日10分、自宅で始めるセルフケア",
+      "이런 걸 배워요":"学べること",
+      "14일 데일리 영상 강의 · 하루 10분":"14日間のデイリー動画講座・1日10分",
+      "진단 결과에 맞춘 단계별 셀프케어 루틴":"診断結果に合わせた段階別セルフケア",
+      "근막·습관·자세를 함께 잡는 통합 가이드":"筋膜・習慣・姿勢を一緒に整える統合ガイド",
+      "기간 제한 없는 무제한 다시보기":"期間制限なしの見放題",
+      "커리큘럼":"カリキュラム",
+      "내 얼굴 구조 이해하기":"自分の顔の構造を理解する",
+      "근막 이완과 습관 교정":"筋膜リリースと習慣の矯正",
+      "라인 정돈과 유지 루틴":"ラインを整えて維持するルーティン",
+      "수강료":"受講料",
+      "(오픈 예정가)":"（オープン予定価格）",
+      "사전 등록하고 오픈 알림 받기":"事前登録してオープン通知を受け取る",
+      "결제 오픈 시 이 화면에서 바로 수강 신청할 수 있어요.":"決済オープン時、この画面からそのまま受講申込できます。",
       "강좌 보러가기":"講座を見る",
       "비주얼 클리닉 방문 케어":"ビジュアルクリニック 訪問ケア",
       "김선미 대표가 직접 얼굴과 자세의 구조를 평가하고, 나에게 맞는 1:1 케어를 진행합니다 · 서울 청담동":"キム・ソンミ代表が直接、顔と姿勢の構造を評価し、あなたに合った1:1ケアを行います・ソウル清潭洞",
