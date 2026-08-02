@@ -165,11 +165,17 @@
   .bk-overlay{position:fixed;inset:0;z-index:1000;background:rgba(34,30,27,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .2s}
   .bk-overlay[hidden]{display:none}
   .bk-overlay.bk-open{opacity:1}
-  .bk-panel{background:#fff;border-radius:14px;width:100%;max-width:760px;height:min(86vh,780px);position:relative;box-shadow:0 24px 60px rgba(34,30,27,.28);overflow:hidden;transform:translateY(10px);transition:transform .2s}
+  .bk-panel{background:#fff;border-radius:16px;width:100%;max-width:720px;height:min(88vh,820px);position:relative;box-shadow:0 24px 60px rgba(34,30,27,.28);overflow:hidden;display:flex;flex-direction:column;transform:translateY(10px);transition:transform .2s}
   .bk-overlay.bk-open .bk-panel{transform:translateY(0)}
-  .bk-close{position:absolute;top:8px;right:10px;z-index:2;background:rgba(255,255,255,.92);border:none;font-size:26px;line-height:1;color:var(--vc-taupe);cursor:pointer;width:38px;height:38px;border-radius:50%}
+  .bk-head{flex:none;padding:22px 26px 16px;border-bottom:1px solid var(--vc-line)}
+  .bk-eyebrow{font-size:11px;letter-spacing:.2em;color:var(--vc-rosewood);font-weight:600;margin-bottom:7px}
+  .bk-title{font-family:var(--font-display);font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--vc-ink);margin-bottom:4px;word-break:keep-all}
+  .bk-sub{font-size:13px;color:var(--vc-taupe);word-break:keep-all}
+  .bk-frame-wrap{flex:1 1 auto;min-height:0;background:#F6F1EA}
+  #bk-frame{width:100%;height:100%;border:0;display:block}
+  .bk-close{position:absolute;top:14px;right:14px;z-index:2;background:#F6F1EA;border:none;font-size:24px;line-height:1;color:var(--vc-taupe);cursor:pointer;width:36px;height:36px;border-radius:50%}
   .bk-close:hover{background:var(--vc-blush);color:var(--vc-ink)}
-  #bk-frame{width:100%;height:100%;border:0;display:block;background:#F6F1EA}
+  @media (max-width:480px){ .bk-head{padding:18px 18px 13px} .bk-title{font-size:19px} }
   .vc-thumb svg .ln{stroke:#8A5A50;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .vc-thumb svg .ac{stroke:var(--vc-rosewood);stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .vc-thumb svg .fl{fill:#fff;stroke:#8A5A50;stroke-width:2}
@@ -820,9 +826,14 @@
   · 비어 있으면 기존 whattime 예약 링크(새 탭)로 안전 폴백.
 ──────────────────────────────────────────── -->
 <div class="bk-overlay" id="bookingModal" hidden>
-  <div class="bk-panel" role="dialog" aria-modal="true" aria-label="방문 예약">
+  <div class="bk-panel" role="dialog" aria-modal="true" aria-labelledby="bk-title">
     <button class="bk-close" onclick="closeBookingModal()" aria-label="닫기">&times;</button>
-    <iframe id="bk-frame" title="방문 예약" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="bk-head">
+      <p class="bk-eyebrow">OFFLINE 1:1 CARE</p>
+      <h3 class="bk-title" id="bk-title">비주얼 클리닉 방문 예약</h3>
+      <p class="bk-sub">원하시는 날짜와 시간을 선택해 주세요.</p>
+    </div>
+    <div class="bk-frame-wrap"><iframe id="bk-frame" title="방문 예약" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
   </div>
 </div>
 <script id="booking-modal-script">
@@ -1404,6 +1415,8 @@
       "비주얼 클리닉 방문 케어":"Visual Clinic In-Person Care",
       "김선미 대표가 직접 얼굴과 자세의 구조를 평가하고, 나에게 맞는 1:1 케어를 진행합니다 · 서울 청담동":"Kim Seon-mi personally assesses your facial and postural structure and provides 1:1 care tailored to you · Cheongdam, Seoul",
       "방문 예약하기":"Book a visit",
+      "비주얼 클리닉 방문 예약":"Book Your Visit — Visual Clinic",
+      "원하시는 날짜와 시간을 선택해 주세요.":"Choose a date and time that works for you.",
       "오프라인 1:1 케어 알아보기":"Explore in-person 1:1 care",
       "먼저 시작한 분들의 이야기":"Stories from those who started first",
       "\"거울 볼 때마다 한숨이었는데, 2주 차부터 오후의 처짐이 달라지는 게 느껴졌어요. 무엇보다 내 주름이 왜 생겼는지 알게 된 게 가장 커요.\"":"\"I used to sigh every time I looked in the mirror, but from week two I could feel the afternoon sagging change. Most of all, finally understanding why my folds formed meant the most.\"",
@@ -1562,6 +1575,8 @@
       "비주얼 클리닉 방문 케어":"ビジュアルクリニック 訪問ケア",
       "김선미 대표가 직접 얼굴과 자세의 구조를 평가하고, 나에게 맞는 1:1 케어를 진행합니다 · 서울 청담동":"キム・ソンミ代表が直接、顔と姿勢の構造を評価し、あなたに合った1:1ケアを行います・ソウル清潭洞",
       "방문 예약하기":"訪問を予約する",
+      "비주얼 클리닉 방문 예약":"ビジュアルクリニック 訪問予約",
+      "원하시는 날짜와 시간을 선택해 주세요.":"ご希望の日時をお選びください。",
       "오프라인 1:1 케어 알아보기":"オフライン1:1ケアを見る",
       "먼저 시작한 분들의 이야기":"ひと足先に始めた方の声",
       "\"거울 볼 때마다 한숨이었는데, 2주 차부터 오후의 처짐이 달라지는 게 느껴졌어요. 무엇보다 내 주름이 왜 생겼는지 알게 된 게 가장 커요.\"":"「鏡を見るたびにため息でしたが、2週目から午後のたるみが変わるのを感じました。何より、自分のシワができた理由が分かったことが一番大きいです。」",
