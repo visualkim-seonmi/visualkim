@@ -34,6 +34,13 @@
   .foot{text-align:center;margin-top:18px;font-size:12.5px}
   .foot a{color:var(--sub);text-decoration:none}
   .hide{display:none!important}
+  .divider{display:flex;align-items:center;gap:10px;margin:20px 0 14px;color:var(--sub);font-size:12px}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .social{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;color:var(--ink);transition:.15s}
+  .social:hover{background:#FAF6F2}
+  .social .gicon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid var(--line);font-weight:800;font-size:12px;color:#4285F4}
+  .social.kakao{background:#FEE500;border-color:#FEE500;color:#191600}
+  .social.kakao:hover{filter:brightness(.97)}
 </style>
 </head>
 <body>
@@ -59,6 +66,10 @@
       <label class="consent"><input type="checkbox" id="s-agree"> <span>서비스 이용 및 개인정보 수집·이용에 동의합니다. (필수)</span></label>
       <button class="btn" type="submit" id="s-btn" disabled style="margin-top:14px">회원가입</button>
     </form>
+
+    <div class="divider"><span>또는 간편 로그인</span></div>
+    <button class="social" data-oauth="google" type="button"><span class="gicon">G</span> Google로 계속하기</button>
+    <button class="social kakao" data-oauth="kakao" type="button">카카오로 계속하기</button>
 
     <div id="msg"></div>
     <p class="foot"><a href="https://visualkim.com/">← 홈으로 돌아가기</a></p>
@@ -111,6 +122,16 @@
     if(data.session){ location.replace(NEXT); }          // 이메일 확인 off → 즉시 로그인
     else { msg('가입 완료! 확인 메일을 보냈어요. 메일의 링크를 눌러 인증한 뒤 로그인해 주세요. (스팸함도 확인)',0); setTab('login'); }
   };
+
+  // 소셜 로그인 (Google · Kakao) — Supabase에서 해당 공급자 활성화 시 동작
+  document.querySelectorAll('[data-oauth]').forEach(function(b){
+    b.onclick=async function(){
+      var name = b.dataset.oauth==='kakao' ? '카카오' : 'Google';
+      msg(name+' 연결 중…',0);
+      var res=await sb.auth.signInWithOAuth({ provider:b.dataset.oauth, options:{ redirectTo: location.origin + NEXT } });
+      if(res.error){ msg(name+' 로그인이 아직 준비되지 않았어요. (Supabase에서 '+b.dataset.oauth+' 공급자 활성화가 필요합니다)',1); }
+    };
+  });
 })();
 </script>
 </body>
