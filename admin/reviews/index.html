@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>후기 관리 · 비주얼 클리닉</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#F6F1EA">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23A8624E'/%3E%3Cpath d='M38 20 C 47 29 47 39 38 48' stroke='%23FAF6F2' stroke-width='5.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  :root{--bg:#F6F1EA;--surface:#fff;--ink:#221E1B;--sub:#7C6F66;--rose:#A8624E;--rose-deep:#8F4E3C;--line:#E7DED3;--blush:#EFE7DB;--warn:#B4443A;--ok:#4A7C59;
+    --sans:"Pretendard",-apple-system,sans-serif}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:14px}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 18px 80px}
+  a{color:var(--rose)}
+  h1{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .muted{color:var(--sub)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+  .btn:hover{background:var(--blush)}
+  .btn.primary{background:var(--rose);color:#fff;border-color:var(--rose)}
+  .btn.primary:hover{background:var(--rose-deep)}
+  .btn.primary:disabled{background:#D8C7BF;border-color:#D8C7BF;cursor:not-allowed}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .btn.danger{color:var(--warn);border-color:#e6c3bf}
+  .btn.danger:hover{background:#F7E9E7}
+  input[type=text],input[type=email],input[type=password],textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink)}
+  textarea{min-height:80px;resize:vertical}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--sub);margin-bottom:5px}
+  .field{margin-bottom:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0 14px}
+  .tab{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:var(--sub)}
+  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .rev{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;margin-bottom:10px}
+  .rev .stars{color:var(--rose);letter-spacing:1px}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
+  .badge.pending{background:#FBEEC9;color:#8a6d1a}
+  .badge.approved{background:#E3F0E7;color:var(--ok)}
+  .badge.rejected{background:#F3E0DE;color:var(--warn)}
+  .badge.on{background:var(--rose);color:#fff}
+  .badge.spon{background:#EAD9F0;color:#7A4A8A}
+  .badge.member{background:#DDEBF5;color:#2E6B93}
+  .langtabs{display:flex;gap:4px;margin-bottom:6px}
+  .langtab{padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12px;font-weight:600}
+  .langtab.on{background:var(--blush);border-color:var(--rose)}
+  .toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px}
+  .switch{width:38px;height:22px;border-radius:20px;background:#D8CEC4;position:relative;transition:.2s;flex:none}
+  .switch.on{background:var(--rose)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+  .switch.on::after{left:18px}
+  .overlay{position:fixed;inset:0;background:rgba(34,30,27,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:24px}
+  .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px}
+  .msg.err{background:#F7E9E7;color:var(--warn)}
+  .msg.ok{background:#E3F0E7;color:var(--ok)}
+  .hide{display:none!important}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로그인 -->
+  <div id="login" class="hide">
+    <div class="card" style="max-width:380px;margin:60px auto">
+      <h1>후기 관리 로그인</h1>
+      <p class="muted" style="margin:6px 0 18px;font-size:13px">비주얼 클리닉 관리자 계정으로 로그인하세요.</p>
+      <div class="field"><label>이메일</label><input type="email" id="li-email" autocomplete="username"></div>
+      <div class="field"><label>비밀번호</label><input type="password" id="li-pw" autocomplete="current-password"></div>
+      <button class="btn primary" id="li-btn" style="width:100%">로그인</button>
+      <div id="li-msg"></div>
+    </div>
+  </div>
+
+  <!-- 앱 -->
+  <div id="app" class="hide">
+    <div class="toolbar">
+      <h1>후기 관리 <span class="muted" style="font-size:13px;font-weight:400">· 비주얼 클리닉</span></h1>
+      <div class="row">
+        <a class="btn sm ghost" href="https://visualkim.com/#section-reviews" target="_blank">랜딩에서 보기 ↗</a>
+        <button class="btn sm ghost" id="logout">로그아웃</button>
+      </div>
+    </div>
+    <p id="not-admin" class="msg err hide">이 계정은 관리자로 등록되어 있지 않습니다. 관리자 등록(admins 테이블) 후 이용하세요.</p>
+
+    <!-- 새 후기 등록 -->
+    <div class="card" id="uploadCard" style="margin-bottom:8px">
+      <div class="row" style="justify-content:space-between">
+        <strong>새 후기 등록</strong>
+        <span class="muted" style="font-size:12px">관리자 등록분은 즉시 '승인' 상태 · 노출은 아래 목록에서 켜세요</span>
+      </div>
+      <div style="margin-top:14px">
+        <div class="grid2">
+          <div class="field"><label>작성자 라벨</label><input type="text" id="f-label" placeholder="예: 14일 홈케어 수강생 J님"></div>
+          <div class="field"><label>별점</label>
+            <select id="f-rating"><option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option><option value="1">★☆☆☆☆ (1)</option></select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>구분</label>
+            <select id="f-source"><option value="course">강좌</option><option value="visit">방문</option></select>
+          </div>
+          <div class="field"><label>대가 제공(체험단)</label>
+            <label class="toggle" style="margin-top:6px"><span class="switch" id="f-spon"></span><span id="f-spon-t">아니오</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label>본문 (ko 필수 · en/ja 선택)</label>
+          <div class="langtabs">
+            <span class="langtab on" data-l="ko">한국어*</span><span class="langtab" data-l="en">English</span><span class="langtab" data-l="ja">日本語</span>
+          </div>
+          <textarea id="f-body-ko" placeholder="한국어 본문 (필수)"></textarea>
+          <textarea id="f-body-en" class="hide" placeholder="English (optional)"></textarea>
+          <textarea id="f-body-ja" class="hide" placeholder="日本語 (任意)"></textarea>
+        </div>
+        <div class="field">
+          <label class="toggle"><input type="checkbox" id="f-consent" style="width:auto"> <span>고객의 게재 동의를 받았습니다 (필수)</span></label>
+        </div>
+        <button class="btn primary" id="f-save" disabled>후기 등록</button>
+        <div id="f-msg"></div>
+      </div>
+    </div>
+
+    <!-- 목록 & 승인 -->
+    <div class="tabs">
+      <span class="tab on" data-t="approved">게재/승인</span>
+      <span class="tab" data-t="pending">대기</span>
+      <span class="tab" data-t="rejected">반려됨</span>
+      <span class="tab" data-t="all">전체</span>
+    </div>
+    <div id="list"><p class="muted">불러오는 중…</p></div>
+  </div>
+</div>
+
+<!-- 금칙어 경고 모달 -->
+<div class="overlay" id="banModal">
+  <div class="modal">
+    <strong style="color:var(--warn)">⚠️ 금칙어가 포함되어 있어요</strong>
+    <p class="muted" style="margin:10px 0;font-size:13px">아래 표현은 의료법·표시광고 리스크가 있어 게재가 어려울 수 있습니다:</p>
+    <p id="ban-words" style="font-weight:700;color:var(--warn);margin-bottom:16px"></p>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn ghost" id="ban-cancel">돌아가서 수정</button>
+      <button class="btn danger" id="ban-proceed">그래도 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 반려 사유 모달 -->
+<div class="overlay" id="rejModal">
+  <div class="modal">
+    <strong>반려 사유 선택</strong>
+    <p class="muted" style="margin:8px 0 12px;font-size:13px">작성자 마이페이지에 표시됩니다.</p>
+    <div id="rej-reasons"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:14px">
+      <button class="btn ghost" id="rej-cancel">취소</button>
+      <button class="btn primary" id="rej-confirm" disabled>반려하기</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  const SUPABASE_URL = 'https://urhmynpkknlwgxtqklcs.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_eswMXufv1In3MlB7MYbjDA_DnNO4SOP';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  let ME = null, IS_ADMIN = false, BANNED = [], REASONS = [], CUR_TAB = 'approved', pendingSave = null, rejTarget = null, rejReason = null;
+
+  function esc(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function stars(n){ return '★★★★★☆☆☆☆☆'.slice(5-n, 10-n); }
+  async function logHist(review_id, action, detail){ try{ await sb.from('review_history').insert({review_id, action, actor: ME?.id, detail}); }catch(e){} }
+
+  // ── Auth ──
+  $('#li-btn').onclick = async ()=>{
+    const email=$('#li-email').value.trim(), password=$('#li-pw').value;
+    $('#li-msg').innerHTML='';
+    const {error} = await sb.auth.signInWithPassword({email, password});
+    if(error){ $('#li-msg').innerHTML='<div class="msg err">'+esc(error.message)+'</div>'; return; }
+    init();
+  };
+  $('#li-pw').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#li-btn').click(); });
+  $('#logout').onclick = async ()=>{ await sb.auth.signOut(); location.reload(); };
+
+  async function init(){
+    const {data:{user}} = await sb.auth.getUser();
+    if(!user){ $('#login').classList.remove('hide'); $('#app').classList.add('hide'); return; }
+    ME = user;
+    $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+    // 관리자 여부: admins에서 본인 조회
+    const {data:adm} = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
+    IS_ADMIN = !!adm;
+    if(!IS_ADMIN){ $('#not-admin').classList.remove('hide'); $('#uploadCard').classList.add('hide'); }
+    // 설정 로드
+    const {data:st} = await sb.from('review_settings').select('key,value');
+    (st||[]).forEach(r=>{ if(r.key==='banned_words') BANNED=r.value; if(r.key==='reject_reasons') REASONS=r.value; });
+    buildRejReasons();
+    loadList();
+  }
+
+  // ── 등록 폼 ──
+  $$('.langtab').forEach(t=> t.onclick=()=>{ $$('.langtab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
+    ['ko','en','ja'].forEach(l=> $('#f-body-'+l).classList.toggle('hide', l!==t.dataset.l)); });
+  $('#f-spon').onclick = function(){ this.classList.toggle('on'); $('#f-spon-t').textContent=this.classList.contains('on')?'예 (체험단)':'아니오'; };
+  $('#f-consent').onchange = function(){ $('#f-save').disabled = !this.checked; };
+
+  function findBanned(text){ return BANNED.filter(w=> text.includes(w)); }
+  $('#f-save').onclick = ()=>{
+    const ko=$('#f-body-ko').value.trim();
+    const label=$('#f-label').value.trim();
+    if(!label){ formMsg('작성자 라벨을 입력하세요.', true); return; }
+    if(!ko){ formMsg('한국어 본문은 필수입니다.', true); return; }
+    if(!$('#f-consent').checked){ formMsg('게재 동의를 확인하세요.', true); return; }
+    const body={ko}; const en=$('#f-body-en').value.trim(), ja=$('#f-body-ja').value.trim();
+    if(en) body.en=en; if(ja) body.ja=ja;
+    const rec={ author_label:label, body, rating:parseInt($('#f-rating').value),
+      source:$('#f-source').value, is_sponsored:$('#f-spon').classList.contains('on'),
+      consent_confirmed:true, status:'approved', visible:false, user_id:null };
+    const hits=findBanned(ko+' '+en+' '+ja);
+    if(hits.length){ pendingSave=rec; $('#ban-words').textContent=hits.join(', '); $('#banModal').classList.add('show'); return; }
+    doSave(rec);
+  };
+  $('#ban-cancel').onclick=()=>{ $('#banModal').classList.remove('show'); pendingSave=null; };
+  $('#ban-proceed').onclick=()=>{ $('#banModal').classList.remove('show'); if(pendingSave){ doSave(pendingSave); pendingSave=null; } };
+  async function doSave(rec){
+    const {data,error}=await sb.from('reviews').insert(rec).select().single();
+    if(error){ formMsg('저장 실패: '+error.message, true); return; }
+    await logHist(data.id,'created',{author_label:rec.author_label});
+    formMsg('등록 완료! 아래 목록에서 노출을 켜면 랜딩에 반영됩니다.', false);
+    $('#f-label').value=''; $('#f-body-ko').value=''; $('#f-body-en').value=''; $('#f-body-ja').value='';
+    $('#f-consent').checked=false; $('#f-save').disabled=true;
+    $('#f-spon').classList.remove('on'); $('#f-spon-t').textContent='아니오';
+    CUR_TAB='approved'; setTab('approved'); loadList();
+  }
+  function formMsg(m,err){ $('#f-msg').innerHTML='<div class="msg '+(err?'err':'ok')+'">'+esc(m)+'</div>'; }
+
+  // ── 탭 & 목록 ──
+  $$('.tab').forEach(t=> t.onclick=()=>{ setTab(t.dataset.t); loadList(); });
+  function setTab(t){ CUR_TAB=t; $$('.tab').forEach(x=>x.classList.toggle('on', x.dataset.t===t)); }
+
+  async function loadList(){
+    let q=sb.from('reviews').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+    if(CUR_TAB==='approved') q=q.eq('status','approved');
+    else if(CUR_TAB==='pending') q=q.eq('status','pending');
+    else if(CUR_TAB==='rejected') q=q.eq('status','rejected');
+    const {data,error}=await q;
+    if(error){ $('#list').innerHTML='<p class="msg err">'+esc(error.message)+'</p>'; return; }
+    if(!data.length){ $('#list').innerHTML='<p class="muted" style="padding:20px 0">해당 항목이 없습니다.</p>'; return; }
+    $('#list').innerHTML = data.map(rowHtml).join('');
+    bindRows(data);
+  }
+
+  function rowHtml(r){
+    const sb2 = r.body.ko || r.body.en || r.body.ja || '';
+    let badges='';
+    badges += '<span class="badge '+r.status+'">'+({pending:'대기',approved:'승인',rejected:'반려'}[r.status])+'</span>';
+    if(r.visible) badges+='<span class="badge on">노출중</span>';
+    if(r.is_sponsored) badges+='<span class="badge spon">체험단</span>';
+    if(r.user_id) badges+='<span class="badge member">인증 수강생</span>';
+    let actions='';
+    if(r.status==='approved'){
+      actions='<label class="toggle"><span class="switch '+(r.visible?'on':'')+'" data-vis="'+r.id+'"></span><span>노출</span></label>'
+        +'<button class="btn sm" data-up="'+r.id+'">▲</button><button class="btn sm" data-down="'+r.id+'">▼</button>'
+        +'<button class="btn sm danger" data-del="'+r.id+'">삭제</button>';
+    } else if(r.status==='pending'){
+      actions='<button class="btn sm primary" data-appr="'+r.id+'">승인</button><button class="btn sm danger" data-rej="'+r.id+'">반려</button>';
+    } else if(r.status==='rejected'){
+      actions='<span class="muted" style="font-size:12px">사유: '+esc(r.reject_reason||'-')+'</span><button class="btn sm" data-appr="'+r.id+'">승인으로</button><button class="btn sm danger" data-del="'+r.id+'">삭제</button>';
+    }
+    return '<div class="rev"><div class="row" style="justify-content:space-between"><span><span class="stars">'+stars(r.rating)+'</span> '+badges+'</span></div>'
+      +'<p style="margin:8px 0 6px">'+esc(sb2)+'</p>'
+      +'<div class="row" style="justify-content:space-between"><span class="muted" style="font-size:12.5px">'+esc(r.author_label)+' · '+(r.source==='course'?'강좌':'방문')+'</span><span class="row">'+actions+'</span></div></div>';
+  }
+
+  function bindRows(data){
+    $$('[data-vis]').forEach(el=> el.onclick=()=>toggleVisible(el.dataset.vis, !el.classList.contains('on')));
+    $$('[data-appr]').forEach(el=> el.onclick=()=>setStatus(el.dataset.appr,'approved'));
+    $$('[data-rej]').forEach(el=> el.onclick=()=>openReject(el.dataset.rej));
+    $$('[data-del]').forEach(el=> el.onclick=()=>del(el.dataset.del));
+    $$('[data-up]').forEach(el=> el.onclick=()=>reorder(el.dataset.up,-1,data));
+    $$('[data-down]').forEach(el=> el.onclick=()=>reorder(el.dataset.down,1,data));
+  }
+
+  async function toggleVisible(id,val){ await sb.from('reviews').update({visible:val}).eq('id',id); await logHist(id,'visibility',{visible:val}); loadList(); }
+  async function setStatus(id,status){ const patch={status}; if(status==='approved') patch.reject_reason=null; await sb.from('reviews').update(patch).eq('id',id); await logHist(id,status,{}); loadList(); }
+  async function del(id){ if(!confirm('이 후기를 삭제할까요?')) return; await logHist(id,'deleted',{}); await sb.from('reviews').delete().eq('id',id); loadList(); }
+  async function reorder(id,dir,data){
+    const list=data.filter(r=>r.status==='approved'); const i=list.findIndex(r=>r.id===id); const j=i+dir;
+    if(i<0||j<0||j>=list.length) return;
+    const a=list[i], b=list[j];
+    await sb.from('reviews').update({sort_order:b.sort_order}).eq('id',a.id);
+    await sb.from('reviews').update({sort_order:a.sort_order}).eq('id',b.id);
+    await logHist(a.id,'reorder',{}); loadList();
+  }
+
+  // 반려 사유
+  function buildRejReasons(){ $('#rej-reasons').innerHTML=REASONS.map((r,i)=>'<label class="toggle" style="margin-bottom:6px"><input type="radio" name="rej" value="'+esc(r)+'" style="width:auto"> '+esc(r)+'</label>').join('');
+    $$('#rej-reasons input').forEach(inp=> inp.onchange=()=>{ rejReason=inp.value; $('#rej-confirm').disabled=false; }); }
+  function openReject(id){ rejTarget=id; rejReason=null; $('#rej-confirm').disabled=true; $$('#rej-reasons input').forEach(i=>i.checked=false); $('#rejModal').classList.add('show'); }
+  $('#rej-cancel').onclick=()=>{ $('#rejModal').classList.remove('show'); };
+  $('#rej-confirm').onclick=async()=>{ if(!rejReason) return; await sb.from('reviews').update({status:'rejected',reject_reason:rejReason,visible:false}).eq('id',rejTarget); await logHist(rejTarget,'rejected',{reason:rejReason}); $('#rejModal').classList.remove('show'); loadList(); };
+
+  init();
+})();
+</script>
+</body>
+</html>
