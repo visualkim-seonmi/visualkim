@@ -842,13 +842,16 @@
   var BOOKING_URL = window.VC_BOOKING_URL || 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3E-fD1UDA1_I96KPoLgmgEBEYR9YysoNyZY01URkzvXcYEdfaWSKhwoLsl5eP_9vUsYhiOc4Lq?gv=true';
   var BOOKING_FALLBACK = 'https://whattime.co.kr/realign/visualclinic';
   var bm = function(){ return document.getElementById('bookingModal'); };
+  // 페이지 언어에 맞춰 구글 예약 페이지 표시 언어(hl) 지정
+  function bkLang(){ var l=String(localStorage.getItem('vc_lang')||document.documentElement.lang||'ko').toLowerCase().slice(0,2); return (l==='en'||l==='ja')?l:'ko'; }
+  function bkUrl(){ var sep = BOOKING_URL.indexOf('?')>-1 ? '&' : '?'; return BOOKING_URL + sep + 'hl=' + bkLang(); }
 
   window.openBookingModal = function(){
     if(!BOOKING_URL){ window.open(BOOKING_FALLBACK, '_blank', 'noopener'); return; }
     var el = bm();
     if(!el){ window.open(BOOKING_URL, '_blank', 'noopener'); return; }
     var f = document.getElementById('bk-frame');
-    if(f && !f.getAttribute('src')){ f.setAttribute('src', BOOKING_URL); } // 열 때만 로드
+    if(f){ var want = bkUrl(); if(f.getAttribute('src') !== want){ f.setAttribute('src', want); } } // 열 때 현재 페이지 언어로 로드
     el.hidden = false;
     requestAnimationFrame(function(){ el.classList.add('bk-open'); });
     document.body.style.overflow = 'hidden';
