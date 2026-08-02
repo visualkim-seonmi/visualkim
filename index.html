@@ -275,8 +275,16 @@
   .header-logo:hover{color:var(--vc-rosewood)}
   #site-footer a{transition:color .2s}
   #site-footer a:hover{color:var(--vc-rosewood)}
-  .header-nav a{transition:color .2s}
+  .header-nav a{transition:color .2s;position:relative}
   .header-nav a:hover{color:var(--vc-rosewood)}
+  .header-nav a.active{color:var(--vc-ink);font-weight:600}
+  .header-nav a.active::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;background:var(--vc-rosewood);border-radius:2px}
+  #site-header{transition:box-shadow .3s ease, background .3s ease}
+  #site-header.scrolled{box-shadow:0 6px 24px rgba(51,38,48,.07);background:rgba(250,246,242,.98)}
+  /* 스크롤 등장 애니메이션 */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){ .reveal{opacity:1!important;transform:none!important;transition:none} #site-header{transition:none} }
   img{user-select:none}
 </style>
 
@@ -474,9 +482,13 @@
   <div class="wrap header-inner">
     <a class="header-logo" href="#section-hero" aria-label="비주얼 클리닉 홈">VISUAL CLINIC</a>
     <nav class="header-nav" aria-label="주요 메뉴">
-      <a href="#section-expert">전문가 소개</a>
+      <a href="#section-hero">홈</a>
+      <a href="#section-expert">소개</a>
       <a href="#section-diagnosis">자가 진단</a>
-      <a href="#section-courses">강좌</a>
+      <a href="#section-courses">온라인</a>
+      <a href="#course-card-offline">오프라인</a>
+      <a href="#section-reviews">후기</a>
+      <a href="#site-footer">문의</a>
     </nav>
     <div class="header-actions">
       <div class="vc-lang" role="group" aria-label="Language / 언어">
@@ -1419,6 +1431,12 @@
       "먼저 시작한 분들의 이야기":"Stories from those who started first",
       "로그인":"Log in",
       "마이페이지":"My page",
+      "홈":"Home",
+      "소개":"About",
+      "온라인":"Online",
+      "오프라인":"Offline",
+      "후기":"Review",
+      "문의":"Contact",
       "후기 작성하기":"Write a review",
       "아직 후기가 없어요. 첫 후기의 주인공이 되어주세요 💛":"No reviews yet — be the first to share yours 💛",
       "눈으로 바로 보이는, 진짜 변화":"Real change, visible at a glance",
@@ -1580,6 +1598,12 @@
       "먼저 시작한 분들의 이야기":"ひと足先に始めた方の声",
       "로그인":"ログイン",
       "마이페이지":"マイページ",
+      "홈":"ホーム",
+      "소개":"紹介",
+      "온라인":"オンライン",
+      "오프라인":"オフライン",
+      "후기":"レビュー",
+      "문의":"お問い合わせ",
       "후기 작성하기":"レビューを書く",
       "아직 후기가 없어요. 첫 후기의 주인공이 되어주세요 💛":"まだレビューがありません。最初のレビューをぜひ 💛",
       "눈으로 바로 보이는, 진짜 변화":"ひと目でわかる、本当の変化",
@@ -1883,6 +1907,35 @@
     if(link){ link.textContent = on?'마이페이지':'로그인'; link.href = on?'/mypage/':'/login/'; }
     if(write){ write.href = on ? '/mypage/' : ('/login/?tab=signup&next=' + encodeURIComponent('/mypage/')); }
   }).catch(function(){});
+})();
+</script>
+
+<!-- [motion] 스크롤 등장 애니메이션 · 활성 내비 하이라이트 · 헤더 그림자 -->
+<script id="motion-script">
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var header=document.getElementById('site-header');
+  function onScroll(){ if(header) header.classList.toggle('scrolled', window.scrollY>10); }
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  if(!reduce && 'IntersectionObserver' in window){
+    var els=[].slice.call(document.querySelectorAll('.eyebrow,.sec-title,.sec-desc,.step-card,.vc-card,.ba-card,.expert-grid,.hero-cta,#section-hero h1'));
+    els.forEach(function(el){ el.classList.add('reveal'); });
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+    els.forEach(function(el){ io.observe(el); });
+    setTimeout(function(){ els.forEach(function(el){ el.classList.add('in'); }); }, 1800); // 안전장치
+  }
+
+  var links=[].slice.call(document.querySelectorAll('.header-nav a'));
+  var map={};
+  links.forEach(function(a){ var id=a.getAttribute('href'); if(id&&id.charAt(0)==='#'){ var t=document.querySelector(id); if(t){ map[id]=a; } } });
+  var sects=Object.keys(map).map(function(id){ return document.querySelector(id); }).filter(Boolean);
+  if('IntersectionObserver' in window && sects.length){
+    var navio=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ var a=map['#'+e.target.id]; if(a){ links.forEach(function(x){ x.classList.remove('active'); }); a.classList.add('active'); } } });
+    }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+    sects.forEach(function(s){ navio.observe(s); });
+  }
 })();
 </script>
 </body>
