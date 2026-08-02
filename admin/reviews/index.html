@@ -29,7 +29,7 @@
   .btn.danger{color:var(--warn);border-color:#e6c3bf}
   .btn.danger:hover{background:#F7E9E7}
   input[type=text],input[type=email],input[type=password],textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink)}
-  textarea{min-height:70px;resize:vertical}
+  textarea{min-height:96px;resize:vertical;line-height:1.9;padding:12px 13px}
   label{display:block;font-size:12.5px;font-weight:600;color:var(--sub);margin-bottom:5px}
   .field{margin-bottom:14px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -56,6 +56,9 @@
   .overlay.show{display:flex}
   .modal{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:24px}
   .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px}
+  .spell-res{border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin-top:8px;background:#FCFAF7}
+  .spell-item{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid #F0E9DF}
+  .spell-item:last-of-type{border-bottom:none}
   .msg.err{background:#F7E9E7;color:var(--warn)}.msg.ok{background:#E3F0E7;color:var(--ok)}
   .hide{display:none!important}
   .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
@@ -116,8 +119,10 @@
           <div class="field"><label>본문 (ko 필수 · en/ja 선택)</label>
             <div class="langtabs"><span class="langtab on" data-l="ko">한국어*</span><span class="langtab" data-l="en">English</span><span class="langtab" data-l="ja">日本語</span></div>
             <textarea id="f-body-ko" placeholder="한국어 본문 (필수)"></textarea>
-            <textarea id="f-body-en" class="hide" placeholder="English (optional)"></textarea>
-            <textarea id="f-body-ja" class="hide" placeholder="日本語 (任意)"></textarea>
+            <textarea id="f-body-en" class="hide" placeholder="English (optional)" spellcheck="true" lang="en"></textarea>
+            <textarea id="f-body-ja" class="hide" placeholder="日本語 (任意)" spellcheck="true" lang="ja"></textarea>
+            <button type="button" class="btn sm" id="f-spell" style="margin-top:8px">🔍 한국어 맞춤법 검사</button>
+            <div id="f-spell-res"></div>
           </div>
           <div class="field"><label class="toggle"><input type="checkbox" id="f-consent" style="width:auto"> <span>고객의 게재 동의를 받았습니다 (필수)</span></label></div>
           <button class="btn primary" id="f-save" disabled>후기 등록</button>
@@ -171,6 +176,28 @@
   <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn ghost" id="rej-cancel">취소</button><button class="btn primary" id="rej-confirm" disabled>반려하기</button></div>
 </div></div>
 
+<div class="overlay" id="editModal"><div class="modal" style="max-width:540px;text-align:left">
+  <div class="row" style="justify-content:space-between"><strong>후기 수정</strong>
+    <span class="muted" style="font-size:12px">저장하면 랜딩에 바로 반영 · 승인·노출 상태는 그대로</span></div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="field"><label>작성자 라벨</label><input type="text" id="e-label"></div>
+    <div class="field"><label>별점</label><select id="e-rating"><option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option><option value="1">★☆☆☆☆ (1)</option></select></div>
+  </div>
+  <div class="grid2">
+    <div class="field"><label>구분</label><select id="e-source"><option value="course">강좌</option><option value="visit">방문</option></select></div>
+    <div class="field"><label>대가 제공(체험단)</label><label class="toggle" style="margin-top:6px"><span class="switch" id="e-spon"></span><span id="e-spon-t">아니오</span></label></div>
+  </div>
+  <div class="field"><label>본문 (ko 필수 · en/ja 선택)</label>
+    <div class="langtabs"><span class="langtab on" data-el="ko">한국어*</span><span class="langtab" data-el="en">English</span><span class="langtab" data-el="ja">日本語</span></div>
+    <textarea id="e-body-ko" placeholder="한국어 본문 (필수)"></textarea>
+    <textarea id="e-body-en" class="hide" placeholder="English (optional)" spellcheck="true" lang="en"></textarea>
+    <textarea id="e-body-ja" class="hide" placeholder="日本語 (任意)" spellcheck="true" lang="ja"></textarea>
+    <button type="button" class="btn sm" id="e-spell" style="margin-top:8px">🔍 한국어 맞춤법 검사</button>
+    <div id="e-spell-res"></div>
+  </div>
+  <div id="e-msg"></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn ghost" id="e-cancel">취소</button><button class="btn primary" id="e-save">저장</button></div>
+</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -231,11 +258,11 @@
     $('#list').innerHTML=data.map(rowHtml).join('');bindRows(data);}
   function rowHtml(r){const t=r.body.ko||r.body.en||r.body.ja||'';let b='<span class="badge '+r.status+'">'+({pending:'대기',approved:'승인',rejected:'반려'}[r.status])+'</span>';
     if(r.visible)b+='<span class="badge on">노출중</span>';if(r.is_sponsored)b+='<span class="badge spon">체험단</span>';if(r.user_id)b+='<span class="badge member">인증 수강생</span>';
-    let a='';if(r.status==='approved')a='<label class="toggle"><span class="switch '+(r.visible?'on':'')+'" data-vis="'+r.id+'"></span><span>노출</span></label><button class="btn sm" data-up="'+r.id+'">▲</button><button class="btn sm" data-down="'+r.id+'">▼</button><button class="btn sm danger" data-del="'+r.id+'">삭제</button>';
-    else if(r.status==='pending')a='<button class="btn sm primary" data-appr="'+r.id+'">승인</button><button class="btn sm danger" data-rej="'+r.id+'">반려</button>';
-    else if(r.status==='rejected')a='<span class="muted" style="font-size:12px">사유: '+esc(r.reject_reason||'-')+'</span><button class="btn sm" data-appr="'+r.id+'">승인으로</button><button class="btn sm danger" data-del="'+r.id+'">삭제</button>';
+    let a='<button class="btn sm" data-edit="'+r.id+'">✏️ 수정</button>';if(r.status==='approved')a+='<label class="toggle"><span class="switch '+(r.visible?'on':'')+'" data-vis="'+r.id+'"></span><span>노출</span></label><button class="btn sm" data-up="'+r.id+'">▲</button><button class="btn sm" data-down="'+r.id+'">▼</button><button class="btn sm danger" data-del="'+r.id+'">삭제</button>';
+    else if(r.status==='pending')a+='<button class="btn sm primary" data-appr="'+r.id+'">승인</button><button class="btn sm danger" data-rej="'+r.id+'">반려</button>';
+    else if(r.status==='rejected')a+='<span class="muted" style="font-size:12px">사유: '+esc(r.reject_reason||'-')+'</span><button class="btn sm" data-appr="'+r.id+'">승인으로</button><button class="btn sm danger" data-del="'+r.id+'">삭제</button>';
     return '<div class="rev"><div class="row" style="justify-content:space-between"><span><span class="stars">'+stars(r.rating)+'</span> '+b+'</span></div><p style="margin:8px 0 6px">'+esc(t)+'</p><div class="row" style="justify-content:space-between"><span class="muted" style="font-size:12.5px">'+esc(r.author_label)+' · '+(r.source==='course'?'강좌':'방문')+'</span><span class="row">'+a+'</span></div></div>';}
-  function bindRows(data){$$('[data-vis]').forEach(el=>el.onclick=()=>toggleVis(el.dataset.vis,!el.classList.contains('on')));$$('[data-appr]').forEach(el=>el.onclick=()=>setStatus(el.dataset.appr,'approved'));$$('[data-rej]').forEach(el=>el.onclick=()=>openReject(el.dataset.rej));$$('[data-del]').forEach(el=>el.onclick=()=>del(el.dataset.del));$$('[data-up]').forEach(el=>el.onclick=()=>reorder(el.dataset.up,-1,data));$$('[data-down]').forEach(el=>el.onclick=()=>reorder(el.dataset.down,1,data));}
+  function bindRows(data){$$('[data-vis]').forEach(el=>el.onclick=()=>toggleVis(el.dataset.vis,!el.classList.contains('on')));$$('[data-appr]').forEach(el=>el.onclick=()=>setStatus(el.dataset.appr,'approved'));$$('[data-rej]').forEach(el=>el.onclick=()=>openReject(el.dataset.rej));$$('[data-del]').forEach(el=>el.onclick=()=>del(el.dataset.del));$$('[data-up]').forEach(el=>el.onclick=()=>reorder(el.dataset.up,-1,data));$$('[data-down]').forEach(el=>el.onclick=()=>reorder(el.dataset.down,1,data));$$('[data-edit]').forEach(el=>el.onclick=()=>openEdit(el.dataset.edit,data));}
   async function toggleVis(id,v){await sb.from('reviews').update({visible:v}).eq('id',id);await logHist(id,'visibility',{visible:v});loadList();}
   async function setStatus(id,s){const p={status:s};if(s==='approved')p.reject_reason=null;await sb.from('reviews').update(p).eq('id',id);await logHist(id,s,{});loadList();}
   async function del(id){if(!confirm('이 후기를 삭제할까요?'))return;await logHist(id,'deleted',{});await sb.from('reviews').delete().eq('id',id);loadList();}
@@ -244,6 +271,67 @@
   function openReject(id){rejTarget=id;rejReason=null;$('#rej-confirm').disabled=true;$$('#rej-reasons input').forEach(i=>i.checked=false);$('#rejModal').classList.add('show');}
   $('#rej-cancel').onclick=()=>$('#rejModal').classList.remove('show');
   $('#rej-confirm').onclick=async()=>{if(!rejReason)return;await sb.from('reviews').update({status:'rejected',reject_reason:rejReason,visible:false}).eq('id',rejTarget);await logHist(rejTarget,'rejected',{reason:rejReason});$('#rejModal').classList.remove('show');loadList();};
+
+  // ── 후기 수정 ──
+  let editTarget=null;
+  $$('#editModal .langtab').forEach(t=>t.onclick=()=>{$$('#editModal .langtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');['ko','en','ja'].forEach(l=>$('#e-body-'+l).classList.toggle('hide',l!==t.dataset.el));});
+  $('#e-spon').onclick=function(){this.classList.toggle('on');$('#e-spon-t').textContent=this.classList.contains('on')?'예 (체험단)':'아니오';};
+  function openEdit(id,data){const r=(data||[]).find(x=>x.id===id);if(!r)return;editTarget=id;
+    $('#e-label').value=r.author_label||'';$('#e-rating').value=String(r.rating);$('#e-source').value=r.source;
+    $('#e-spon').classList.toggle('on',!!r.is_sponsored);$('#e-spon-t').textContent=r.is_sponsored?'예 (체험단)':'아니오';
+    $('#e-body-ko').value=(r.body&&r.body.ko)||'';$('#e-body-en').value=(r.body&&r.body.en)||'';$('#e-body-ja').value=(r.body&&r.body.ja)||'';
+    $$('#editModal .langtab').forEach(x=>x.classList.toggle('on',x.dataset.el==='ko'));['ko','en','ja'].forEach(l=>$('#e-body-'+l).classList.toggle('hide',l!=='ko'));
+    $('#e-msg').innerHTML='';$('#editModal').classList.add('show');}
+  $('#e-cancel').onclick=()=>$('#editModal').classList.remove('show');
+  $('#e-save').onclick=async()=>{const ko=$('#e-body-ko').value.trim(),label=$('#e-label').value.trim();
+    if(!label){$('#e-msg').innerHTML='<div class="msg err">작성자 라벨을 입력하세요.</div>';return;}
+    if(!ko){$('#e-msg').innerHTML='<div class="msg err">한국어 본문은 필수입니다.</div>';return;}
+    const body={ko};const en=$('#e-body-en').value.trim(),ja=$('#e-body-ja').value.trim();if(en)body.en=en;if(ja)body.ja=ja;
+    const patch={author_label:label,body,rating:parseInt($('#e-rating').value),source:$('#e-source').value,is_sponsored:$('#e-spon').classList.contains('on')};
+    $('#e-msg').innerHTML='<div class="msg">저장 중…</div>';
+    const {error}=await sb.from('reviews').update(patch).eq('id',editTarget);
+    if(error){$('#e-msg').innerHTML='<div class="msg err">저장 실패: '+esc(error.message)+'</div>';return;}
+    await logHist(editTarget,'updated',{});$('#editModal').classList.remove('show');loadList();};
+
+  // ── 한국어 맞춤법 간이 검사 (규칙 사전 기반) ──
+  // [틀린표현, 교정] — 문맥과 무관하게 거의 항상 틀리는 것만. 긴 패턴을 앞에 둬 우선 교정.
+  const SPELL_FIX=[
+    ['안되요','안 돼요'],['안되서','안 돼서'],['안됫','안 됐'],['안됬','안 됐'],
+    ['되요','돼요'],['되서','돼서'],['됬','됐'],['됫','됐'],
+    ['몇일','며칠'],['오랫만','오랜만'],['오랜동안','오랫동안'],['왠만','웬만'],['웬지','왠지'],
+    ['금새','금세'],['역활','역할'],['희안','희한'],['설레임','설렘'],['설레였','설렜'],
+    ['일일히','일일이'],['곰곰히','곰곰이'],['깨끗히','깨끗이'],['틈틈히','틈틈이'],
+    ['있읍니다','있습니다'],['없읍니다','없습니다'],['습니당','습니다'],
+    ['뇌졸증','뇌졸중'],['어의없','어이없'],['짜집기','짜깁기'],['우겨넣','욱여넣'],
+    ['할께','할게'],['갈께','갈게'],['볼께','볼게'],['드릴께','드릴게'],['줄께','줄게'],['살께','살게'],
+    ['할수있','할 수 있'],['할수없','할 수 없'],['볼수있','볼 수 있'],['볼수없','볼 수 없'],
+    ['될수있','될 수 있'],['될수없','될 수 없'],['줄수있','줄 수 있'],['줄수없','줄 수 없'],
+    ['수있','수 있'],['수없','수 없']
+  ];
+  // [표현, 안내] — 문맥에 따라 달라 자동 교정 대신 '확인'만.
+  const SPELL_FLAG=[
+    ['바램','희망의 뜻이면 \'바람\'이 맞아요 (바램=색 바랜)'],
+    ['로써','자격=\'로서\' / 수단·도구=\'로써\' 확인'],
+    ['왠일','\'웬일\'이 맞아요 (\'왠\'은 \'왠지\'에만)']
+  ];
+  function spellScan(t){var fixes=[],flags=[];
+    SPELL_FIX.forEach(function(p){if(t.indexOf(p[0])>=0)fixes.push(p);});
+    SPELL_FLAG.forEach(function(p){if(t.indexOf(p[0])>=0)flags.push(p);});
+    return {fixes:fixes,flags:flags};}
+  function runSpell(taSel,resSel){var ta=$(taSel),res=$(resSel);var r=spellScan(ta.value);
+    if(!r.fixes.length&&!r.flags.length){res.innerHTML='<div class="msg ok">규칙 사전 기준 발견된 오류가 없어요. 👍</div>';return;}
+    var h='<div class="spell-res">';
+    if(r.fixes.length){h+='<p style="font-weight:700;font-size:12.5px;margin-bottom:4px">교정 제안 '+r.fixes.length+'건</p>';
+      r.fixes.forEach(function(p,i){h+='<div class="spell-item"><span><b style="color:var(--warn)">'+esc(p[0])+'</b> → <b style="color:var(--ok)">'+esc(p[1])+'</b></span><button type="button" class="btn sm" data-fix="'+i+'">교정</button></div>';});
+      h+='<button type="button" class="btn sm primary" data-fixall="1" style="margin-top:8px">모두 교정</button>';}
+    if(r.flags.length){h+='<p style="font-weight:700;font-size:12.5px;margin:12px 0 4px">확인 필요 '+r.flags.length+'건</p>';
+      r.flags.forEach(function(p){h+='<div class="spell-item"><span>\''+esc(p[0])+'\' — '+esc(p[1])+'</span></div>';});}
+    h+='<p class="muted" style="font-size:11.5px;margin-top:8px">※ 자주 틀리는 맞춤법 사전 기반 간이 검사예요. 최종 확인은 직접 해주세요.</p></div>';
+    res.innerHTML=h;
+    res.querySelectorAll('[data-fix]').forEach(function(el){el.onclick=function(){var p=r.fixes[parseInt(el.dataset.fix)];ta.value=ta.value.split(p[0]).join(p[1]);runSpell(taSel,resSel);};});
+    var all=res.querySelector('[data-fixall]');if(all)all.onclick=function(){r.fixes.forEach(function(p){ta.value=ta.value.split(p[0]).join(p[1]);});runSpell(taSel,resSel);};}
+  $('#f-spell').onclick=function(){runSpell('#f-body-ko','#f-spell-res');};
+  $('#e-spell').onclick=function(){runSpell('#e-body-ko','#e-spell-res');};
 
   // ── BEFORE & AFTER ──
   $$('#panel-ba .langtab').forEach(t=>t.onclick=()=>{$$('#panel-ba .langtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');['ko','en','ja'].forEach(l=>$('#ba-cap-'+l).classList.toggle('hide',l!==t.dataset.bl));});
