@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 | 비주얼 클리닉</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#F6F1EA">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23A8624E'/%3E%3Cpath d='M38 20 C 47 29 47 39 38 48' stroke='%23FAF6F2' stroke-width='5.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F6F1EA;--ink:#221E1B;--sub:#7C6F66;--rose:#A8624E;--rose-deep:#8F4E3C;--line:#E7DED3;--blush:#EFE7DB;--warn:#B4443A;--ok:#4A7C59;--serif:"Noto Serif KR",serif;--sans:"Pretendard",-apple-system,sans-serif}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:14px}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 18px 80px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+  .brand{font-family:var(--serif);font-weight:600;font-size:18px}
+  a{color:var(--rose);text-decoration:none}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--blush)}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .btn.primary{background:var(--rose);color:#fff;border-color:var(--rose)}
+  .btn.primary:hover{background:var(--rose-deep)}
+  .btn.primary:disabled{background:#D8C7BF;border-color:#D8C7BF;cursor:not-allowed}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px}
+  h2{font-size:16px;font-weight:700;margin-bottom:14px}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--sub);margin-bottom:5px}
+  select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink)}
+  textarea{min-height:96px;resize:vertical}
+  .field{margin-bottom:14px}
+  .stars-in{display:flex;gap:4px;font-size:26px;cursor:pointer;color:#D8CEC4}
+  .stars-in span.on{color:var(--rose)}
+  .consent{font-size:12.5px;color:var(--sub);display:flex;gap:7px;align-items:flex-start}
+  .consent input{width:auto;margin-top:3px}
+  .msg{padding:10px 13px;border-radius:8px;font-size:13px;margin-top:10px;word-break:keep-all}
+  .msg.err{background:#F7E9E7;color:var(--warn)}.msg.ok{background:#E3F0E7;color:var(--ok)}.msg.warn{background:#FBF1DC;color:#8a6d1a}
+  .rev{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;margin-bottom:10px}
+  .rev .stars{color:var(--rose);letter-spacing:1px}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
+  .badge.pending{background:#FBEEC9;color:#8a6d1a}.badge.approved{background:#E3F0E7;color:var(--ok)}.badge.rejected{background:#F3E0DE;color:var(--warn)}
+  .muted{color:var(--sub)}
+  .hide{display:none!important}
+  .cnt{font-size:12px;color:var(--sub);text-align:right;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap" style="opacity:0">
+  <div class="top">
+    <span class="brand">마이페이지 <span class="muted" style="font-size:13px;font-weight:400" id="hello"></span></span>
+    <div>
+      <a class="btn sm" href="https://visualkim.com/">홈</a>
+      <button class="btn sm" id="logout">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="form-title">내 후기 작성</h2>
+    <p class="muted" style="font-size:12.5px;margin-top:-8px;margin-bottom:14px">작성한 후기는 관리자 확인 후 노출됩니다. 경험과 느낌 중심으로 적어주세요 :)</p>
+    <div class="field"><label>별점</label>
+      <div class="stars-in" id="stars"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div>
+    </div>
+    <div class="field" style="max-width:200px"><label>구분</label>
+      <select id="m-source"><option value="course">강좌</option><option value="visit">방문</option></select>
+    </div>
+    <div class="field"><label>후기 내용 (30자 이상)</label>
+      <textarea id="m-body" maxlength="1000" placeholder="비주얼 클리닉과 함께한 경험을 들려주세요."></textarea>
+      <div class="cnt"><span id="m-cnt">0</span>자</div>
+      <div id="m-guide"></div>
+    </div>
+    <label class="consent"><input type="checkbox" id="m-consent"> <span>이 후기를 홈페이지에 게재하는 데 동의합니다. (필수)</span></label>
+    <button class="btn primary" id="m-save" disabled style="margin-top:16px">후기 등록</button>
+    <button class="btn sm hide" id="m-cancel" style="margin-top:16px;margin-left:8px">수정 취소</button>
+    <div id="m-msg"></div>
+  </div>
+
+  <h2 style="margin:8px 4px 12px">내 후기</h2>
+  <div id="my-list"><p class="muted">불러오는 중…</p></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  const sb=window.supabase.createClient('https://urhmynpkknlwgxtqklcs.supabase.co','sb_publishable_eswMXufv1In3MlB7MYbjDA_DnNO4SOP');
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  let ME=null, RATING=5, BANNED=[], editId=null;
+  function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function stars(n){return '★★★★★☆☆☆☆☆'.slice(5-n,10-n);}
+
+  async function init(){
+    const {data:{user}}=await sb.auth.getUser();
+    if(!user){ location.replace('/login/?next='+encodeURIComponent('/mypage/')); return; }
+    ME=user;
+    $('#hello').textContent='· '+(user.user_metadata?.name || user.email);
+    $('#wrap').style.opacity='1';
+    const {data:st}=await sb.from('review_settings').select('value').eq('key','banned_words').maybeSingle();
+    if(st) BANNED=st.value||[];
+    setStars(5);
+    loadMine();
+  }
+  $('#logout').onclick=async()=>{ await sb.auth.signOut(); location.href='https://visualkim.com/'; };
+
+  // 별점
+  function setStars(v){ RATING=v; $$('#stars span').forEach(s=>s.classList.toggle('on', +s.dataset.v<=v)); }
+  $$('#stars span').forEach(s=> s.onclick=()=>setStars(+s.dataset.v));
+  setStars(5);
+
+  // 본문 카운트 + 금칙어 안내 + 저장 가능 여부
+  $('#m-body').oninput=check; $('#m-consent').onchange=check;
+  function findBanned(t){ return BANNED.filter(w=>t.includes(w)); }
+  function check(){
+    const t=$('#m-body').value.trim();
+    $('#m-cnt').textContent=t.length;
+    const hits=findBanned(t);
+    if(hits.length) $('#m-guide').innerHTML='<div class="msg warn">치료·완치 등 의료적 표현('+esc(hits.join(', '))+')은 게재가 어려워요. 경험과 느낌 중심으로 적어주세요 :)</div>';
+    else $('#m-guide').innerHTML='';
+    $('#m-save').disabled=!(t.length>=30 && $('#m-consent').checked);
+  }
+
+  $('#m-save').onclick=async()=>{
+    const t=$('#m-body').value.trim();
+    if(t.length<30){ mMsg('후기는 30자 이상 적어주세요.',1); return; }
+    if(!$('#m-consent').checked){ mMsg('게재 동의가 필요합니다.',1); return; }
+    const label=(ME.user_metadata?.name||'비주얼 클리닉 회원');
+    const rec={ user_id:ME.id, author_label:label, body:{ko:t}, rating:RATING, source:$('#m-source').value, consent_confirmed:true, status:'pending' };
+    $('#m-save').disabled=true;
+    let error;
+    if(editId){ ({error}=await sb.from('reviews').update({body:{ko:t},rating:RATING,source:$('#m-source').value,status:'pending',reject_reason:null,visible:false}).eq('id',editId)); }
+    else { ({error}=await sb.from('reviews').insert(rec)); }
+    if(error){ mMsg('저장 실패: '+error.message,1); $('#m-save').disabled=false; return; }
+    mMsg(editId?'수정 완료! 다시 관리자 승인을 기다립니다.':'후기가 등록되었어요! 관리자 승인 후 노출됩니다. 감사합니다 💛',0);
+    resetForm(); loadMine();
+  };
+  $('#m-cancel').onclick=resetForm;
+  function resetForm(){ editId=null; $('#m-body').value=''; $('#m-consent').checked=false; setStars(5); $('#m-source').value='course'; $('#form-title').textContent='내 후기 작성'; $('#m-cancel').classList.add('hide'); $('#m-cnt').textContent='0'; $('#m-guide').innerHTML=''; $('#m-save').disabled=true; }
+  function mMsg(m,e){ $('#m-msg').innerHTML='<div class="msg '+(e?'err':'ok')+'">'+esc(m)+'</div>'; }
+
+  async function loadMine(){
+    const {data,error}=await sb.from('reviews').select('*').eq('user_id',ME.id).order('created_at',{ascending:false});
+    if(error){ $('#my-list').innerHTML='<p class="msg err">'+esc(error.message)+'</p>'; return; }
+    if(!data.length){ $('#my-list').innerHTML='<p class="muted" style="padding:16px 0">아직 작성한 후기가 없어요. 위에서 첫 후기를 남겨보세요!</p>'; return; }
+    $('#my-list').innerHTML=data.map(r=>{
+      const stat={pending:'승인 대기',approved:'게재 중',rejected:'반려'}[r.status];
+      let extra='';
+      if(r.status==='rejected'&&r.reject_reason) extra='<p class="muted" style="font-size:12.5px;margin-top:6px">반려 사유: '+esc(r.reject_reason)+' — 수정 후 다시 제출할 수 있어요.</p>';
+      const canEdit = r.status!=='approved';
+      return '<div class="rev"><div style="display:flex;justify-content:space-between;align-items:center"><span class="stars">'+stars(r.rating)+'</span><span class="badge '+r.status+'">'+stat+'</span></div>'
+        +'<p style="margin:8px 0 4px">'+esc(r.body.ko||'')+'</p>'+extra
+        +(canEdit?'<div style="margin-top:8px"><button class="btn sm" data-edit="'+r.id+'">수정</button></div>':'')
+        +'</div>';
+    }).join('');
+    $$('[data-edit]').forEach(b=> b.onclick=()=>startEdit(data.find(x=>x.id===b.dataset.edit)));
+  }
+  function startEdit(r){ editId=r.id; $('#m-body').value=r.body.ko||''; setStars(r.rating); $('#m-source').value=r.source||'course'; $('#m-consent').checked=true; $('#form-title').textContent='후기 수정'; $('#m-cancel').classList.remove('hide'); check(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  init();
+})();
+</script>
+</body>
+</html>

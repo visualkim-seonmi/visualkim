@@ -484,6 +484,7 @@
         <button type="button" data-lang="en" onclick="vcSetLang('en')">EN</button>
         <button type="button" data-lang="ja" onclick="vcSetLang('ja')">日本語</button>
       </div>
+      <a id="auth-link" href="/login/" style="font-size:13px;color:var(--vc-taupe);font-weight:600;white-space:nowrap;text-decoration:none">로그인</a>
       <a class="btn header-cta" href="#section-diagnosis">3분 진단 시작</a>
     </div>
   </div>
@@ -898,13 +899,15 @@
 <!-- ────────────────────────────────────────────
   [section-reviews] 후기 · 변화 사례 (+ 필수 고지 컴포넌트)
 ──────────────────────────────────────────── -->
-<section id="section-reviews" style="background:var(--vc-blush);display:none">
+<section id="section-reviews" style="background:var(--vc-blush)">
   <span class="sec-tag">#section-reviews</span>
   <div class="wrap">
     <p class="eyebrow">REAL STORIES</p>
     <h2 class="sec-title">먼저 시작한 분들의 이야기</h2>
     <div class="grid grid-3" id="reviews-grid"></div>
-    <p class="disclaimer">※ 셀프케어 결과는 개인의 생활 습관과 상태에 따라 차이가 있을 수 있습니다. 본 서비스는 의료 행위를 대체하지 않습니다.</p>
+    <p id="reviews-empty" style="text-align:center;padding:8px 0 2px;color:var(--vc-taupe);font-size:14px;display:none">아직 후기가 없어요. 첫 후기의 주인공이 되어주세요 💛</p>
+    <div style="text-align:center;margin-top:22px"><a class="btn ghost" id="reviews-write" href="/mypage/">후기 작성하기</a></div>
+    <p class="disclaimer" id="reviews-disc">※ 셀프케어 결과는 개인의 생활 습관과 상태에 따라 차이가 있을 수 있습니다. 본 서비스는 의료 행위를 대체하지 않습니다.</p>
   </div>
 </section>
 
@@ -1414,6 +1417,10 @@
       "원하시는 날짜와 시간을 선택해 주세요.":"Choose a date and time that works for you.",
       "오프라인 1:1 케어 알아보기":"Explore in-person 1:1 care",
       "먼저 시작한 분들의 이야기":"Stories from those who started first",
+      "로그인":"Log in",
+      "마이페이지":"My page",
+      "후기 작성하기":"Write a review",
+      "아직 후기가 없어요. 첫 후기의 주인공이 되어주세요 💛":"No reviews yet — be the first to share yours 💛",
       "눈으로 바로 보이는, 진짜 변화":"Real change, visible at a glance",
       "비주얼 클리닉과 함께한 실제 전·후 기록입니다.":"Real before-and-after records from Visual Clinic.",
       "※ 셀프케어 결과는 개인의 생활 습관과 상태에 따라 차이가 있을 수 있습니다. 본 서비스는 의료 행위를 대체하지 않습니다.":"※ Self-care results may vary depending on individual habits and condition. This service does not replace medical treatment.",
@@ -1571,6 +1578,10 @@
       "원하시는 날짜와 시간을 선택해 주세요.":"ご希望の日時をお選びください。",
       "오프라인 1:1 케어 알아보기":"オフライン1:1ケアを見る",
       "먼저 시작한 분들의 이야기":"ひと足先に始めた方の声",
+      "로그인":"ログイン",
+      "마이페이지":"マイページ",
+      "후기 작성하기":"レビューを書く",
+      "아직 후기가 없어요. 첫 후기의 주인공이 되어주세요 💛":"まだレビューがありません。最初のレビューをぜひ 💛",
       "눈으로 바로 보이는, 진짜 변화":"ひと目でわかる、本当の変化",
       "비주얼 클리닉과 함께한 실제 전·후 기록입니다.":"ビジュアルクリニックと歩んだ実際のビフォーアフター記録です。",
       "※ 셀프케어 결과는 개인의 생활 습관과 상태에 따라 차이가 있을 수 있습니다. 본 서비스는 의료 행위를 대체하지 않습니다.":"※ セルフケアの結果は個人の生活習慣や状態により異なる場合があります。本サービスは医療行為に代わるものではありません。",
@@ -1797,14 +1808,16 @@
   var sec=document.getElementById('section-reviews');
   if(!grid||!sec) return;
   var REVIEWS=[];
-  var LABEL={ ko:{member:'인증 수강생',spon:'체험단'}, en:{member:'Verified student',spon:'Sponsored'}, ja:{member:'認証受講生',spon:'提供'} };
+  var LABEL={ ko:{member:'인증 회원',spon:'체험단'}, en:{member:'Verified member',spon:'Sponsored'}, ja:{member:'認証会員',spon:'提供'} };
   function lang(){ var l=String(localStorage.getItem('vc_lang')||document.documentElement.lang||'ko').toLowerCase().slice(0,2); return (l==='en'||l==='ja')?l:'ko'; }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function stars(n){ n=Math.max(0,Math.min(5,n|0)); return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n); }
   function badge(txt,bg,col){ return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle;background:'+bg+';color:'+col+'">'+esc(txt)+'</span>'; }
   function render(){
-    if(!REVIEWS.length){ sec.style.display='none'; return; }
     var L=lang(), T=LABEL[L];
+    var emptyEl=document.getElementById('reviews-empty'), discEl=document.getElementById('reviews-disc');
+    if(!REVIEWS.length){ grid.innerHTML=''; if(emptyEl)emptyEl.style.display=''; if(discEl)discEl.style.display='none'; return; }
+    if(emptyEl)emptyEl.style.display='none'; if(discEl)discEl.style.display='';
     grid.innerHTML=REVIEWS.map(function(r){
       var body=(r.body&&(r.body[L]||r.body.ko))||'';
       var b='';
@@ -1855,6 +1868,21 @@
     .then(function(d){ ITEMS=Array.isArray(d)?d:[]; render(); })
     .catch(function(){ sec.style.display='none'; });
   if(typeof window.vcSetLang==='function'){ var _o=window.vcSetLang; window.vcSetLang=function(l){ _o(l); render(); }; }
+})();
+</script>
+
+<!-- [member-auth] 로그인 상태에 따라 헤더 링크·후기작성 CTA 목적지 조정 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script id="member-auth-script">
+(function(){
+  if(!window.supabase) return;
+  var sb=window.supabase.createClient('https://urhmynpkknlwgxtqklcs.supabase.co','sb_publishable_eswMXufv1In3MlB7MYbjDA_DnNO4SOP');
+  var link=document.getElementById('auth-link'), write=document.getElementById('reviews-write');
+  sb.auth.getSession().then(function(res){
+    var on = !!(res.data && res.data.session);
+    if(link){ link.textContent = on?'마이페이지':'로그인'; link.href = on?'/mypage/':'/login/'; }
+    if(write){ write.href = on ? '/mypage/' : ('/login/?tab=signup&next=' + encodeURIComponent('/mypage/')); }
+  }).catch(function(){});
 })();
 </script>
 </body>
