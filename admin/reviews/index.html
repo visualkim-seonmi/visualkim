@@ -109,6 +109,7 @@
       <button class="topnav-btn on" data-panel="dash">📊 대시보드</button>
       <button class="topnav-btn" data-panel="reviews">후기 관리</button>
       <button class="topnav-btn" data-panel="ba">BEFORE &amp; AFTER</button>
+      <button class="topnav-btn" data-panel="orders">💳 주문</button>
     </div>
 
     <!-- ══ 대시보드 패널 ══ -->
@@ -174,6 +175,15 @@
         </div>
       </div>
       <div id="ba-list"><p class="muted">불러오는 중…</p></div>
+    </div>
+
+    <div id="panel-orders" class="hide">
+      <div class="card" style="margin-bottom:8px">
+        <div class="row" style="justify-content:space-between"><strong>결제 주문</strong>
+          <span class="muted" style="font-size:12px">결제 승인 시 서버가 자동 기록합니다 · 최근 200건</span></div>
+        <div id="orders-sum" class="muted" style="margin-top:12px;font-size:13px">불러오는 중…</div>
+      </div>
+      <div id="orders-list"><p class="muted">불러오는 중…</p></div>
     </div>
   </div>
 </div>
@@ -248,7 +258,9 @@
     $('#panel-dash').classList.toggle('hide',_p!=='dash');
     $('#panel-reviews').classList.toggle('hide',_p!=='reviews');
     $('#panel-ba').classList.toggle('hide',_p!=='ba');
-    if(_p==='dash')loadDash();});
+    $('#panel-orders').classList.toggle('hide',_p!=='orders');
+    if(_p==='dash')loadDash();
+    if(_p==='orders')loadOrders();});
 
   // ── 후기 등록 ──
   $$('#panel-reviews .langtab').forEach(t=>t.onclick=()=>{$$('#panel-reviews .langtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');['ko','en','ja'].forEach(l=>$('#f-body-'+l).classList.toggle('hide',l!==t.dataset.l));});
@@ -435,6 +447,33 @@
     $$('[data-baup]').forEach(el=>el.onclick=()=>baReorder(el.dataset.baup,-1,data));
     $$('[data-badown]').forEach(el=>el.onclick=()=>baReorder(el.dataset.badown,1,data));}
   async function baReorder(id,dir,data){const i=data.findIndex(r=>r.id===id),j=i+dir;if(i<0||j<0||j>=data.length)return;const a=data[i],b=data[j];await sb.from('before_after').update({sort_order:b.sort_order}).eq('id',a.id);await sb.from('before_after').update({sort_order:a.sort_order}).eq('id',b.id);loadBA();}
+
+  /* ── 주문 조회 ─────────────────────────────────────────────
+     orders 테이블은 RLS 로 관리자만 조회할 수 있고, 생성은 서버(service_role)만 가능합니다.
+     여기서는 읽기 전용으로만 보여줍니다. */
+  const ORDER_STATUS={paid:['결제완료','approved'],pending:['대기','pending'],failed:['실패','rejected'],
+                      canceled:['취소','rejected'],refunded:['환불','rejected']};
+  function won(n){return '₩'+Number(n||0).toLocaleString('ko-KR');}
+  function dt(s){if(!s)return '-';const d=new Date(s);return isNaN(d)?'-':d.toLocaleString('ko-KR',{dateStyle:'medium',timeStyle:'short'});}
+  async function loadOrders(){
+    const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200);
+    if(error){$('#orders-list').innerHTML='<p class="msg err">'+esc(error.message)+'</p>';$('#orders-sum').textContent='';return;}
+    const paid=data.filter(o=>o.status==='paid');
+    const sum=paid.reduce((a,o)=>a+Number(o.amount||0),0);
+    $('#orders-sum').innerHTML='결제완료 <strong>'+paid.length+'건</strong> · 매출 합계 <strong>'+won(sum)+'</strong>'
+      +' <span class="muted">(전체 '+data.length+'건)</span>';
+    if(!data.length){$('#orders-list').innerHTML='<p class="muted" style="padding:20px 0">아직 주문이 없습니다.</p>';return;}
+    $('#orders-list').innerHTML=data.map(o=>{
+      const st=ORDER_STATUS[o.status]||[o.status,'pending'];
+      return '<div class="card" style="margin-bottom:8px">'
+        +'<div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">'
+        +'<div><strong>'+esc(o.order_name)+'</strong><span class="badge '+st[1]+'">'+esc(st[0])+'</span>'
+        +'<p class="muted" style="font-size:12px;margin-top:4px">'+dt(o.approved_at||o.created_at)
+        +(o.method?' · '+esc(o.method):'')+(o.customer_email?' · '+esc(o.customer_email):'')+'</p>'
+        +'<p class="muted" style="font-size:11px;margin-top:2px">'+esc(o.order_id)+'</p></div>'
+        +'<div style="font-size:17px;font-weight:700;white-space:nowrap">'+won(o.amount)+'</div>'
+        +'</div></div>';}).join('');
+  }
 
   init();
 })();
